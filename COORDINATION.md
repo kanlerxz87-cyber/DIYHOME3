@@ -26,7 +26,7 @@
 | T07 | Analytics: click counter + 5 events + self-hosted endpoint | done | 8224b547 | `assets/analytics.js`, `server/analytics-server.py`, `data/events.md` |
 | T08 | Campaign ledger (empty, well-defined) | done | 8224b547 | `verify/campaign-ledger.html` |
 | T09 | Flagged for Review page | done | 8224b547 | `verify/flagged.html` |
-| T10 | GitHub Pages deploy + PR to main + merge | in progress | 8224b547 | `.github/workflows/pages.yml`, `COORDINATION.md` |
+| T10 | GitHub Pages deploy + PR to main + merge | done | 8224b547 | `.github/workflows/pages.yml`, `COORDINATION.md` |
 
 ## Verification log (official sources only)
 
@@ -64,6 +64,8 @@
 
 ## Publish record
 
-- PR: (pending — to be recorded after integration)
-- Merge result: (pending)
-- GitHub Pages deploy: (pending)
+- PR: https://github.com/kanlerxz87-cyber/DIYHOME3/pull/1 (merged 2026-11-20T06:00:22Z, merge commit `8f58e1d`)
+- Merge result: MERGED
+- GitHub Pages deploy: success (status `built`, https://kanlerxz87-cyber.github.io/DIYHOME3/)
+- Live check: front page fetched and confirmed — disclosure strip, 3 product cards with tagged Sponsored links, guides, and verify links all present.
+- T10: done
