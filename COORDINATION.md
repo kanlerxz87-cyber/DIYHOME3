@@ -344,3 +344,52 @@ and the retired baseline still reproduces cleanly from `.build/`:
 **Note for future sessions:** any scope that generates HTML under `release_checks/`
 should name its output directory with a leading dot, or the integrated release
 checker will audit it as part of the publication.
+
+### Correction — the `.build/` rename was an incomplete fix; output now leaves the repository
+
+The previous entry renamed the retired baseline's output to `.build/` and reported the
+integrated checker clean. That was true for `verification/check_release.py` and
+**false for `scripts/check.py`**, which this session then ran and found failing:
+
+```
+FAIL: test_site — AssertionError: 3 != 2 :
+      release_checks/f5df06de/.build/404.html
+```
+
+The two checkers exclude different things:
+
+| Checker | Walk | Excludes |
+|---|---|---|
+| `verification/check_release.py` | filesystem from repo root | path parts starting with `.`, or `node_modules` / `verification` |
+| `scripts/check.py` | `rglob("*.html")` | **only** `verification` |
+
+Dot-prefixing therefore hid the retired pages from one checker and not the other.
+
+**CI was green throughout**, because the directory was gitignored and never committed.
+The breakage existed only in a local working tree. That combination is worth naming: a
+suite that passes in CI while the local tree is broken trains people to distrust local
+failures, and this session nearly shipped exactly that.
+
+**Fix, structural rather than another naming rule:** the retired baseline now generates
+nothing inside the repository. Output goes to `$TMPDIR/diyhome3-retired-baseline`
+(override with `--out`), cleared before each build. `.build/` and its `.gitignore` are
+removed from the tree.
+
+Verified with the baseline **built**, every integrated checker passing:
+
+```
+scripts/check.py                              ->  Ran 2 tests, OK
+verification/check_release.py                 ->  32 HTML page(s) checked; 0 finding(s)
+python3 -m unittest discover -s verification  ->  OK
+python3 -m unittest discover -s scripts       ->  OK
+python3 -m unittest discover -s release_checks/e10111d6  ->  OK
+scripts/build.py --check                      ->  clean
+release_checks/f5df06de/tools/audit.mjs       ->  24 checks, 0 findings
+release_checks/f5df06de/tools/verify.mjs      ->  223 checks, all passing
+release_checks/f5df06de/collector/test.mjs    ->  27 assertions, 0 failed
+```
+
+**Supersedes the note in the previous entry.** The correct guidance for future sessions
+is not "name your output directory with a leading dot" but: **do not generate HTML
+anywhere under the repository in a non-published scope** — `scripts/check.py` will find
+it regardless of dot-prefixing.
