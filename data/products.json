@@ -1,0 +1,62 @@
+{
+  "tracking_id_requested": "shopnow047c-20",
+  "submissions": [
+    {
+      "row": 1,
+      "product": "wallpaper-kit",
+      "submitted_url": "https://link.amazon/B0hmGG4m2",
+      "observed_asin": "B08FKW9JRM",
+      "observed_redirect_target": "https://www.amazon.com/dp/B08FKW9JRM",
+      "observed_on": "2026-11-20",
+      "observation_source": "S12",
+      "duplicate_of": null,
+      "intended_asin": null,
+      "official_listing_url": null,
+      "confirmed_on": null,
+      "confirmation_source": null
+    },
+    {
+      "row": 2,
+      "product": "towel-holder",
+      "submitted_url": "https://link.amazon/B03QDuGdo",
+      "observed_asin": "B0BSKQW2T2",
+      "observed_redirect_target": "https://www.amazon.com/dp/B0BSKQW2T2",
+      "observed_on": "2026-11-20",
+      "observation_source": "S13",
+      "duplicate_of": null,
+      "intended_asin": null,
+      "official_listing_url": null,
+      "confirmed_on": null,
+      "confirmation_source": null
+    },
+    {
+      "row": 3,
+      "product": "towel-holder",
+      "submitted_url": "https://link.amazon/B03QDuGdo",
+      "observed_asin": "B0BSKQW2T2",
+      "observed_redirect_target": "https://www.amazon.com/dp/B0BSKQW2T2",
+      "observed_on": "2026-11-20",
+      "observation_source": "S13",
+      "duplicate_of": 2,
+      "intended_asin": null,
+      "official_listing_url": null,
+      "confirmed_on": null,
+      "confirmation_source": null
+    },
+    {
+      "row": 4,
+      "product": "pan-rack",
+      "submitted_url": "https://link.amazon/B0hpD2JGQ",
+      "observed_asin": "B08DY9HRWD",
+      "observed_redirect_target": "https://www.amazon.com/dp/B08DY9HRWD",
+      "observed_on": "2026-11-20",
+      "observation_source": "S14",
+      "duplicate_of": null,
+      "intended_asin": null,
+      "official_listing_url": null,
+      "confirmed_on": null,
+      "confirmation_source": null
+    }
+  ],
+  "special_links": {}
+}

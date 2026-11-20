@@ -1,131 +1,237 @@
-"""Dependency-free publication builder. All page content is rendered server-side."""
-import json, html, shutil, os
+#!/usr/bin/env python3
+"""Render dependency-free Pages output and fail closed on commerce evidence."""
+import argparse
+import json
+import re
+import sys
+from datetime import date, datetime, timezone
+from email.utils import format_datetime
+from html import escape as e
 from pathlib import Path
-from datetime import datetime, timezone
-from xml.etree.ElementTree import Element, SubElement, ElementTree
-ROOT=Path(__file__).resolve().parents[1]; OUT=ROOT/os.getenv('BUILD_DIR','dist'); DATA=ROOT/'site/data'
-def load(n): return json.loads((DATA/(n+'.json')).read_text())
-C=load('config'); P=load('products'); G=load('guides'); S={s['id']:s for s in load('sources')}
-BASE=C['base_url']; DATE='2026-11-20'; PAGES=[]
-def e(s): return html.escape(str(s),quote=True)
-def url(p=''): return BASE+'/'+p
+from urllib.parse import urlsplit, parse_qs
 
-def link(source,label=None):
- s=S[source]; rel=' rel="sponsored nofollow noopener"' if source in ['S04','S05','S06'] else ' rel="noopener"'
- return f'<a href="{e(s["url"])}"{rel}>{e(label or s["title"])} ↗</a>'
-def sources(ids): return '<aside class="sources"><h2>Sources & reading notes</h2>'+''.join(f'<p><span class="eyebrow">{i} · Official source</span><br>{link(i)}<br><small>{e(S[i]["note"])} Checked {DATE}.</small></p>' for i in ids)+'</aside>'
-def table(headers,rows):
- return '<div class="table-wrap"><table><thead><tr>'+''.join('<th scope="col">'+h+'</th>' for h in headers)+'</tr></thead><tbody>'+''.join('<tr>'+''.join('<td>'+str(v)+'</td>' for v in row)+'</tr>' for row in rows)+'</tbody></table></div>'
-def intro(kicker,title,desc): return f'<header class="page-heading"><p class="eyebrow">{kicker}</p><h1>{title}</h1><p class="lede">{desc}</p></header>'
-def pill(text='Needs review'): return f'<span class="pill">{text}</span>'
-def page(path,title,desc,body,kind='page',schema=None,noindex=False):
- depth=path.count('/'); prefix='../'*depth
- # All internal links use project-root relative URLs, rewritten to relative per page.
- nav=f'''<a class="brand" href="@/index.html" aria-label="DIY Home, home"><span class="brand-icon">⌂</span> DIY HOME<span class="brand-dot">.</span></a>
- <nav aria-label="Main navigation"><a href="@/collections.html">The edit</a><a href="@/kitchen.html">Kitchen & organization</a><a href="@/walls.html">Walls & surfaces</a><a href="@/guides.html">Buying guides</a><details class="workspace-nav"><summary>Workspace <span>⌄</span></summary><div><a href="@/workspace.html">Overview</a><a href="@/research.html">Product register</a><a href="@/measurement.html">Measurement</a><a href="@/publishing.html">Publishing desk</a><a href="@/sources.html">Sources</a><a href="@/flagged.html">Flagged for Review</a></div></details></nav>'''
- footer='''<footer><div class="footer-top"><div><a class="brand" href="@/index.html">DIY HOME.</a><p>A more considered home.<br>One small upgrade at a time.</p></div><div><h3>Explore</h3><a href="@/collections.html">The product edit</a><a href="@/guides.html">All buying guides</a><a href="@/feed.xml" data-event="feed_click">Subscribe via RSS ↗</a></div><div><h3>Behind the publication</h3><a href="@/about.html">About & editorial approach</a><a href="@/workspace.html">Workspace & executive summary</a><a href="@/research.html">Product register</a><a href="@/measurement.html">Measurement</a><a href="@/publishing.html">Publishing desk</a><a href="@/sources.html">Official sources</a><a href="@/flagged.html">Flagged for Review</a><a href="@/privacy.html">Privacy & disclosures</a></div></div><div class="footer-bottom"><p>As an Amazon Associate I earn from qualifying purchases.</p><p>© 2026 DIY HOME · Independently published · No hands-on testing claimed.</p></div></footer>'''
- structured=schema or {'@context':'https://schema.org','@type':'WebSite' if path=='index.html' else 'WebPage','name':title,'url':url(path)}
- endpoint=os.getenv('ANALYTICS_ENDPOINT') or C.get('analytics_endpoint') or ''
- if endpoint and not (endpoint.startswith('https://') or endpoint=='/api/events'): raise ValueError('Analytics endpoint must be HTTPS or same-origin /api/events')
- text=f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(title)} | DIY HOME</title><meta name="description" content="{e(desc)}"><meta name="theme-color" content="#263f35"><link rel="canonical" href="{url(path)}"><meta property="og:type" content="{'article' if kind=='guide' else 'website'}"><meta property="og:title" content="{e(title)}"><meta property="og:description" content="{e(desc)}"><meta property="og:url" content="{url(path)}"><meta property="og:image" content="{url('assets/kitchen.jpg')}"><link rel="icon" href="@/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="@/assets/style.css"><link rel="alternate" type="application/rss+xml" title="DIY HOME buying guides" href="@/feed.xml">{'<meta name="robots" content="noindex,follow">' if noindex else ''}<script type="application/ld+json">{json.dumps(structured).replace('<','<') }</script><script defer src="@/assets/app.js"></script></head><body data-page-type="{kind}" data-page="{path}" data-analytics-endpoint="{e(endpoint)}"><a class="skip" href="#main">Skip to content</a><div class="topline"><span>SMALL CHANGES. A HOME THAT WORKS BETTER.</span><a href="@/about.html">The thoughtful home edit ↗</a></div><header class="masthead">{nav}</header><div class="disclosure">As an Amazon Associate I earn from qualifying purchases. <a href="@/privacy.html">How we’re funded ↗</a></div><main id="main">{body}</main>{footer}</body></html>'''
- text=text.replace('@/',prefix)
- dest=OUT/path; dest.parent.mkdir(parents=True,exist_ok=True); dest.write_text(text)
- PAGES.append((path,noindex))
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'source'))
+from content import DATE, TRACKING_ID, DISCLOSURE, SOURCES, PRODUCTS, SUBMISSIONS, SPECIAL_LINKS, GUIDES
 
-def art(kind,extra=''):
- return f'<div class="product-art {kind} {extra}" aria-hidden="true"><img src="@/assets/{kind}.svg" alt="" loading="lazy"></div>'
-def productcard(p):
- kind={'P01':'tools','P02':'holder','P03':'rack'}[p['id']]
- return f'''<article class="product-card" data-category="{e(p['category'])}"><a class="art-link" href="@/products/{p['slug']}.html" tabindex="-1" aria-hidden="true">{art(kind)}<span class="art-number">0{P.index(p)+1} / THE HOME EDIT</span></a><div class="card-copy"><p class="eyebrow">{e(p['category'])}</p><h3><a href="@/products/{p['slug']}.html">{e(p['title'])}</a></h3><p>{e(p['description'])}</p><a class="text-link" href="@/products/{p['slug']}.html">What to know before buying <span>↗</span></a></div></article>'''
-def guidecard(g):
- return f'''<article class="guide-card"><span class="eyebrow">{e(g['category'])} · {g['minutes']} min read</span><h3><a href="@/guides/{g['slug']}.html">{e(g['title'])}</a></h3><p>{e(g['intro'])}</p><a class="text-link" href="@/guides/{g['slug']}.html">Read the guide <span>↗</span></a></article>'''
+PAGES_URL = 'https://kanlerxz87-cyber.github.io/DIYHOME3/'
+BRAND = 'DIY Home Upgrades'
+DESK = {'executive-summary/': 'Executive summary', 'product-register/': 'Product register', 'flagged-for-review/': 'Flagged for Review', 'measurement/': 'Measurement', 'sources/': 'Source library'}
+SHOP = {'': 'Home', 'shop/': 'Shop', 'guides/': 'Guides'}
+GUIDE = {g['slug']: g for g in GUIDES}
+LEGACY = {
+    'about.html': ('About the home edit', 'executive-summary/'),
+    'disclosure.html': ('Disclosure and publishing standards', 'flagged-for-review/'),
+    'products/': ('Shop the home edit', 'shop/'),
+    'products/wallpaper-tools.html': ('Wallpaper tools', 'guides/wallpaper-tools/'),
+    'products/kitchen-organization.html': ('Kitchen organization', 'shop/'),
+    'products/art3d-smoothing-tool-kit.html': ('Wallpaper smoothing kits', 'guides/wallpaper-tools/'),
+    'products/niffgaff-paper-towel-holder.html': ('Under-cabinet paper towel holders', 'guides/paper-towel-holder/'),
+    'products/ordora-pots-pans-organizer.html': ('Adjustable cookware racks', 'guides/cookware-racks/'),
+    'guides/peel-and-stick-wallpaper-tools.html': ('Peel-and-stick wallpaper tools', 'guides/wallpaper-tools/'),
+    'guides/under-cabinet-paper-towel-holder.html': ('Under-cabinet paper towel holders', 'guides/paper-towel-holder/'),
+    'guides/pots-pans-organizer-cabinet-fit.html': ('Cookware rack cabinet fit', 'guides/cookware-racks/'),
+    'verify/': ('Editorial desk', 'sources/'),
+    'verify/link-register.html': ('Link register', 'product-register/'),
+    'verify/campaign-ledger.html': ('Campaign ledger', 'measurement/'),
+    'verify/flagged.html': ('Flagged for Review', 'flagged-for-review/'),
+}
+ARROW = '<span aria-hidden="true">↗</span>'
+ICON = '<svg width="13" height="13" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7" stroke="currentColor"/><path d="M9 8v5m0-8v1" stroke="currentColor" stroke-width="1.5"/></svg>'
 
-def build():
- from validate import product_errors
- errors=[err for p in P for err in product_errors(p)]
- if errors: raise ValueError('\n'.join(errors))
- if OUT.exists(): shutil.rmtree(OUT)
- OUT.mkdir(); shutil.copytree(ROOT/'site/assets',OUT/'assets'); shutil.copytree(DATA,OUT/'data')
- (OUT/'.nojekyll').touch()
- body='''<section class="hero"><div class="hero-copy"><p class="eyebrow"><span class="tiny-line"></span> THE CONSIDERED HOME · NO. 01</p><h1>Small upgrades.<br><em>Better everyday.</em></h1><p>Make room for a home that works for you. Thoughtful finds and practical buying guides for the spaces you live in most.</p><div class="hero-actions"><a class="button" href="@/collections.html">Explore the home edit <span>↗</span></a><a class="quiet-link" href="@/guides.html">Find your next project →</a></div><div class="hero-note"><span>↳</span> Less impulse. More intention.</div></div><figure class="hero-image"><img src="@/assets/kitchen.jpg" alt="Illustrative sage-green kitchen with oak shelving and warm natural light" fetchpriority="high"><figcaption><span>IN FOCUS</span><strong>A little more space.<br>A little less clutter.</strong><a href="@/kitchen.html" aria-label="Explore kitchen and organization">↗</a></figcaption><span class="image-credit">AI-generated room inspiration · not a product photograph</span></figure></section>
- <div class="principles"><span><b>↗</b> Practical, question-first guides</span><span><b>◌</b> Thoughtful finds, not endless choice</span><span><b>⊞</b> For the home you already have</span></div>
- <section class="section"><div class="section-head"><div><p class="eyebrow">THE PRODUCT EDIT</p><h2>Little things. Useful possibilities.</h2></div><a class="text-link" href="@/collections.html">Explore all finds ↗</a></div><p class="section-note">Three listing discoveries to explore—not tested recommendations. Product intent and affiliate links are still being confirmed.</p><div class="product-grid">'''+''.join(productcard(p) for p in P)+'''</div></section>
- <section class="feature-band"><div><p class="eyebrow">A FRESH PERSPECTIVE</p><h2>Before you add to cart,<br><em>ask a better question.</em></h2><p>Will it fit? How will you use it? What do the instructions actually say? Start with the details that matter in your home.</p><a class="button light" href="@/guides.html">Make a more informed choice ↗</a></div><div class="feature-questions"><a href="@/guides/measure-for-a-pan-organizer.html"><span>01</span> Will it fit my space? ↗</a><a href="@/guides/choose-a-paper-towel-holder.html"><span>02</span> Does it suit my routine? ↗</a><a href="@/guides/plan-a-peel-and-stick-project.html"><span>03</span> What should I check first? ↗</a></div></section>
- <section class="section"><div class="section-head"><div><p class="eyebrow">THE READING ROOM</p><h2>A good home starts with good questions.</h2></div><a class="text-link" href="@/guides.html">All buying guides ↗</a></div><div class="guide-grid">'''+''.join(guidecard(g) for g in G[:3])+'''</div></section>
- <section class="subscribe"><div class="rss-icon">◔</div><div><p class="eyebrow">A SLOWER SCROLL. A MORE USEFUL READ.</p><h2>Keep a little inspiration on hand.</h2><p>Follow new guides in your RSS reader. No inbox clutter. No email address needed.</p></div><a class="button" href="@/feed.xml" data-event="feed_click">Follow the publication ↗</a></section>'''
- page('index.html','Small upgrades. Better everyday.','Thoughtful home finds and question-first buying guides for kitchen organization, walls, and everyday spaces.',body)
- for path,title,cat,desc in [('collections.html','The home edit',None,'A small collection of listing discoveries. Start with what your space needs, then work through the questions before buying.'),('kitchen.html','A place for the everyday','Kitchen & organization','Start with the counter and the cabinet. Explore listing discoveries and practical questions for a more considered kitchen.'),('walls.html','A fresh point of view','Walls & surfaces','Plan the prep before the pattern. Tools, questions, and reading for your next wall refresh.')]:
-  chosen=[p for p in P if not cat or p['category']==cat]
-  body=intro('THE PRODUCT EDIT',title,desc)
-  if not cat: body+='''<div class="filters" role="group" aria-label="Filter product collection"><button class="active" data-filter="all" aria-pressed="true">All finds <span>03</span></button><button data-filter="Kitchen & organization" aria-pressed="false">Kitchen & organization</button><button data-filter="Walls & surfaces" aria-pressed="false">Walls & surfaces</button></div><p id="filter-status" class="sr-only" aria-live="polite"></p>'''
-  body+='<p class="notice">Listing identities below were observed on Amazon on 20 November 2026. They are not yet confirmed as the intended products behind the submitted links. No prices, test scores, or purchase recommendations are claimed.</p><div class="product-grid">'+''.join(productcard(p) for p in chosen)+'</div>'
-  body+='<section class="section"><div class="section-head"><h2>Read before you choose.</h2></div><div class="guide-grid">'+''.join(guidecard(g) for g in G if (not cat and g in G[:3]) or (cat and g['category']==cat))+'</div></section>'
-  page(path,title,desc,'<div class="container">'+body+'</div>')
- for p in P:
-  kind={'P01':'tools','P02':'holder','P03':'rack'}[p['id']]
-  body=f'''<div class="container"><a class="breadcrumb" href="@/collections.html">The home edit / {e(p['category'])}</a><section class="product-detail">{art(kind)}<div><p class="eyebrow">{e(p['category'])}</p><h1>{e(p['title'])}</h1><p class="lede">{e(p['description'])}</p><p class="notice">Listing observed, not tested. Intended product identity and Special Link confirmation are pending. Purchase links are held until those checks pass.</p><h2>Before you choose</h2><ul class="checklist">'''+''.join('<li>'+e(q)+'</li>' for q in p['questions'])+f'''</ul><p class="small">Original category illustration; not an exact product depiction.</p><a class="button" href="@/guides/{G[P.index(p)]['slug']}.html">Read the practical checklist ↗</a></div></section><section class="narrow"><h2>What we can confirm—and what we cannot</h2>'''
-  body+=table(['Detail','Record','Official source'],[['Observed listing ASIN',p['observed_asin'],link(p['source'])],['Intended ASIN','',link('S03')],['Intended official listing URL','',link('S03')],['Identity confirmation date','',link('S03')],['Price / rating / review count','',link(p['source'])],['Status',pill('Unverified intent'),link('S01')]])
-  if p.get('special_link'): body+=f'<p><a class="button" data-event="outbound_click" data-record="{p["id"]}" rel="sponsored nofollow noopener" href="{e(p["special_link"])}">View on Amazon ↗</a></p>'
-  body+='<p>Blank fields are unverified, not zero. An observed redirect does not prove product intent or affiliate attribution. Amazon listing statements are not independent hands-on findings.</p>'+sources([p['source'],'S03','S01'])+'</section></div>'
-  page(f'products/{p["slug"]}.html',p['title'],p['description'],body,'product')
- body=intro('THE READING ROOM','Ask first. Choose well.','Practical checklists for the questions that come before a purchase. No hype, fabricated testing, or assumed bestsellers.')
- for category in ['Kitchen & organization','Walls & surfaces','Appliance planning']:
-  body+='<section class="section"><h2>'+category+'</h2><div class="guide-grid">'+''.join(guidecard(g) for g in G if g['category']==category)+'</div></section>'
- page('guides.html','Question-first buying guides','Practical buyer questions about home organization, wall projects, and kitchen appliance planning.','<div class="container">'+body+'</div>')
- for g in G:
-  body=f'<article class="article"><a class="breadcrumb" href="@/guides.html">Buying guides / {e(g["category"])}</a>'+intro(g['label'],e(g['title']),e(g['intro']))+f'<div class="byline"><span class="avatar">DH</span><span>By <a href="@/about.html">DIY HOME Editorial</a><br><small>AI-assisted editorial desk · Published 20 November 2026 · {g["minutes"]} min read</small></span></div><p class="notice">An editorial planning checklist, not a hands-on test. Questions are prompts to investigate; they are not verified claims about an appliance or product.</p><nav class="contents" aria-label="In this guide"><strong>IN THIS GUIDE</strong>'+''.join(f'<a href="#section-{i}">{i+1:02} &nbsp; {e(h)}</a>' for i,(h,t) in enumerate(g['sections']))+'</nav>'
-  body+=''.join(f'<section id="section-{i}"><h2>{e(h)}</h2><p>{e(t)}</p></section>' for i,(h,t) in enumerate(g['sections']))
-  body+='<section class="takeaway"><p class="eyebrow">TAKE THIS WITH YOU</p><h2>Your before-you-buy checklist</h2><ul class="checklist">'+''.join('<li>'+e(x)+'</li>' for x in g['checklist'])+'</ul><button class="print-button" type="button">Print this checklist ↗</button></section>'
-  if g['product']:
-   p=next(p for p in P if p['id']==g['product']);body+=f'<p>Related listing discovery: <a href="@/products/{p["slug"]}.html">{e(p["title"])}</a>. Identity confirmation is pending; no purchase link is published.</p>'
-  body+=sources(g['sources'])+'<section><h2>Keep asking good questions</h2>'+''.join(f'<p><a href="@/guides/{x["slug"]}.html">{e(x["title"])} →</a></p>' for x in G if x!=g and x['category']==g['category'])+'</section></article>'
-  schema={'@context':'https://schema.org','@type':'Article','headline':g['title'],'description':g['intro'],'datePublished':DATE,'dateModified':DATE,'author':{'@type':'Organization','name':'DIY HOME Editorial','url':url('about.html')},'publisher':{'@type':'Organization','name':'DIY HOME'},'mainEntityOfPage':url('guides/'+g['slug']+'.html')}
-  page('guides/'+g['slug']+'.html',g['title'],g['intro'],body,'guide',schema)
- build_workspace()
- # Feed and sitemap are derived from the same published records, not a second editorial list.
- root=Element('urlset',xmlns='http://www.sitemaps.org/schemas/sitemap/0.9')
- for path,noindex in PAGES:
-  if not noindex:
-   el=SubElement(root,'url');SubElement(el,'loc').text=url(path);SubElement(el,'lastmod').text=DATE
- ElementTree(root).write(OUT/'sitemap.xml',encoding='utf-8',xml_declaration=True)
- rss=Element('rss',version='2.0');ch=SubElement(rss,'channel')
- for k,v in [('title','DIY HOME · The considered home'),('link',url()),('description','Practical question-first home buying guides'),('language','en-us')]:SubElement(ch,k).text=v
- for g in G:
-  item=SubElement(ch,'item')
-  for k,v in [('title',g['title']),('link',url('guides/'+g['slug']+'.html')),('guid',url('guides/'+g['slug']+'.html')),('description',g['intro']),('pubDate','Fri, 20 Nov 2026 09:00:00 +0000')]:SubElement(item,k).text=v
- ElementTree(rss).write(OUT/'feed.xml',encoding='utf-8',xml_declaration=True)
- (OUT/'robots.txt').write_text('User-agent: *\nAllow: /\nSitemap: '+url('sitemap.xml')+'\n')
- print(f'Built {len(PAGES)} HTML pages, sitemap, RSS, and evidence data → dist/')
 
-def build_workspace():
- def wp(path,title,desc,body):page(path,title,desc,'<div class="container workspace">'+intro('BEHIND THE PUBLICATION',title,desc)+body+'</div>',noindex=True)
- body='''<div class="stat-grid"><div><span>Submitted links</span><strong>4</strong><small>3 unique · 1 duplicate</small></div><div><span>Purchase links enabled</span><strong>0</strong><small>Confirmation gate active</small></div><div><span>Published guides</span><strong>7</strong><small>Editorial planning checklists</small></div><div><span>Revenue / conversion rate</span><strong>—</strong><small>No authorized reports</small></div></div><h2>Executive summary</h2><p>DIY HOME is a reader-first home-upgrade publication built from an initially empty repository. The site organizes three observed Amazon listing destinations into kitchen organization and wall-project categories, with seven question-led guides. It does not assert that those destinations are the products intended by the submitter.</p><p>Automated builds generate pages, canonical URLs, Article metadata, a sitemap, and RSS from one data source. CI checks internal links, evidence references, required disclosures, and purchase-link gates. A separately deployable privacy-minimizing event service is supplied and tested; the public Pages site has no connected collector.</p><p>No live AI model, trend feed, pricing API, account enrollment, Search Console verification, order report, or email service is connected. Profitability, demand, commission potential, competition, and conversion performance are therefore unverified. Automation produces source-bound editorial briefs, not invented market scores.</p>'''
- body+=table(['Area','Current finding','Official review source'],[['Product identity','Observed destinations only; intended ASINs remain blank.',link('S03')],['Affiliate setup','shopnow047c-20 supplied by owner; enrollment and attribution unconfirmed.',link('S01')],['Measurement','Five event names defined locally; no prior definitions were supplied. Public collector is disconnected.',link('S09')],['Publishing','Weekly review cadence proposed; only source-backed content is eligible.',link('S10')],['Search','One canonical origin, linked category pages, sitemap and RSS shipped; indexing unconfirmed.',link('S08')],['Disclosure','Masthead strip and footer statement on every page; no legal certification claimed.',link('S07')]])
- body+='''<div class="workspace-grid"><a href="@/research.html"><h2>Product register ↗</h2><p>Submitted links, observed destinations, and separate intent records.</p></a><a href="@/measurement.html"><h2>Measurement ↗</h2><p>Event definitions, empty campaign ledger, and service status.</p></a><a href="@/publishing.html"><h2>Publishing desk ↗</h2><p>Cadence, automation boundaries, and policy gates.</p></a><a href="@/flagged.html"><h2>Flagged for Review ↗</h2><p>Unverified fields and account-dependent next steps.</p></a></div>'''
- wp('workspace.html','Publication workspace','The executive summary, evidence, and operational status. No simulated performance data.',body)
- body='<p class="notice">Observed redirect targets are evidence of a fetch, not a confirmation of intended identity. Exact short-link compliance is unresolved, not declared invalid. Blank cells are unverified.</p><h2>Every submitted entry</h2>'
- body+=table(['Submission','Submitted link','Record','Finding','Official source'],[[str(x['position']),f'<a rel="sponsored nofollow noopener" href="{x["url"]}">{x["url"]} ↗</a>',x['product_id'],f'Duplicate of submission {x["duplicate_of"]}' if x['duplicate_of'] else 'Unique input',link(next(p['source'] for p in P if p['id']==x['product_id']))] for x in load('submissions')])
- body+='<h2>Product-intent confirmation records</h2><p>These fields are deliberately separate from redirect observations. A title seen after a short-link fetch cannot establish what the submitter intended.</p>'
- body+=table(['Record','Intended ASIN','Official listing URL','Confirmation date','Confirmation source','Status','Official reference'],[[p['id'],'','','','',pill('Unverified'),link('S03')] for p in P])
- body+='<h2>Observed destinations · 20 November 2026</h2>'+table(['Record','Observed ASIN','Observed listing title (shortened)','Destination','Observation note'],[[p['id'],p['observed_asin'],e(p['title']),link(p['source']),e(p['observed_redirect_note'])] for p in P])
- body+='<h2>Price, reviews, demand, and commission potential</h2>'+table(['Record','Price','Rating','Review count','Trend / competition','Commission potential','Official source'],[[p['id'],'','','','','',link(p['source'])] for p in P])+'<p>No product metrics have been imported from an authorized API or report. No bestseller, high-converting, or profitable-niche claim is made.</p><p><a href="@/data/products.json">Download intent & observation records (JSON) ↗</a></p>'
- wp('research.html','Product & evidence register','All four submissions accounted for; three unique observed destinations. Intent remains unverified.',body)
- events=[('page_view','One eligible page load; pathname only.'),('guide_view','An eligible load of a guide page.'),('product_view','An eligible load of a product detail page.'),('outbound_click','A user-initiated click on an explicitly marked product/source link; record ID only.'),('feed_click','A user-initiated RSS subscription link click.')]
- body='<div class="notice"><strong>Public collection is not connected.</strong> GitHub Pages is static. The included Python/SQLite service accepts real events when hosted separately and connected over HTTPS. The local preview uses the service; its test or preview traffic is not a campaign report.</div><h2>Five defined events</h2><p>The request did not supply event names, so these five implementation definitions are explicit. No purchase-completion event is fabricated from a click.</p>'+table(['Event','Definition','Official infrastructure reference'],[[f'<code>{n}</code>',d,link('S09')] for n,d in events])
- body+='<h2>Campaign ledger</h2><p>No authorized first-party reports have been imported. Empty does not mean zero orders.</p>'+table(['Timestamp','Source','Channel','Eligible sessions','Clicks','Reported orders','Provenance'],[])+'<p><a href="@/data/campaigns.json">Empty ledger (JSON) ↗</a> · <a href="@/data/campaign-schema.json">Required report schema ↗</a></p><h2>Measurement boundaries</h2><p>The collector stores daily aggregate counts by event, known pathname, and known record ID. It uses no cookies, local storage, fingerprint, persistent identifier, full referrer, query strings, IP addresses, or user agents in its database. It cannot count unique people or eligible Amazon sessions. The hosting provider may still process network logs. DNT and Global Privacy Control suppress collection in the supplied browser script.</p><p>Conversion and order figures must come from authorized Associates reports, with dated provenance. They cannot be derived from an outbound click. Search query data requires an authorized Search Console connection, which is not present.</p>'+sources(['S01','S09'])
- wp('measurement.html','Measure before you optimize','A real service implementation, explicit event definitions, and no invented campaign outcomes.',body)
- body='<h2>Editorial rhythm</h2><p>Proposed cadence: one source-reviewed guide each Tuesday, and a Friday evidence and broken-link review. This is a publishing plan, not an unattended promise. The scheduled workflow runs build and quality checks weekly; it does not manufacture new articles.</p>'
- body+=table(['Stage','Automation shipped','Gate / limitation','Official source'],[['Research','Structured records, deduplication, separate intent fields.','No scraping, live trend source, price feed, or market scoring.',link('S02')],['Draft','Source-bound brief generator for each recorded product.','No live language model or credentials; generation is not evidence.',link('S10')],['Product links','Build rejects incomplete confirmation and attribution fields.','One Special Link per product must be tested in enrolled workflow, with destination and tracking-report evidence.',link('S01')],['Content / API','Disclosures and sponsored attributes checked by CI.','Full current API/content-license policy review before any API is enabled; no Amazon product images copied.',link('S02')],['Publish','Static generation, sitemap, RSS, CI and Pages deployment.','No new guide is auto-approved by a model.',link('S08')],['Optimize','Authorized report importer and empty dated ledger.','No forecast or revenue score until measured data exists.',link('S01')],['Reader capture','RSS feed available without collecting email.','No email capture endpoint or mailing list is claimed.',link('S07')]])
- body+='<h2>Editorial hypotheses, not demand claims</h2><p>The appliance questions are the owner’s suggested topic hypotheses. No search volume or superiority is implied. The seven initial guides are visibly AI-assisted planning checklists, not tested reviews.</p><h2>Parallel passes · SG-27–SG-30</h2>'+table(['Pass','Result','Official reference'],[['SG-27 · Navigation','Reader-facing category labels; a single Workspace navigation group.',link('S08')],['SG-28 · RSS','Feed generated from the same seven guide records.',link('S09')],['SG-29 · Search Console','Not verified or connected; no query data claimed.',link('S08')],['SG-30 · Reader capture','RSS shipped; no email collected.',link('S07')]])+'<p>Branding and original illustrations are local assets. The kitchen hero is AI-generated room inspiration, not a photo of any supplied product. Seasonal framing is editorial only; there are no invented holiday discounts.</p>'
- wp('publishing.html','The publishing desk','Automate the repeatable work. Hold the decisions that still need evidence.',body)
- flags=[('F01','Unconfirmed product intent','All intended ASIN, official listing, confirmation date, and source fields are blank. Observed destinations are retained separately.','S03'),('F02','Special Links and account','Tracking ID is owner-supplied. Enrollment, destination tests, report attribution, and short-link compliance are unresolved. No purchase CTA is enabled.','S01'),('F03','Duplicate submission','The second short URL appears twice. All four submissions are retained; only three unique listing discoveries are shown. The official link can be reviewed, but the duplicate is an input finding, not an Amazon statement.','S05'),('F04','Market data unavailable','Price, rating, reviews, trends, competition, commission potential, eligible sessions, orders, and profitability are unverified and blank.','S02'),('F05','Analytics deployment','Collector code and local service are implemented; no persistent public HTTPS backend has been provisioned. Public event collection is off.','S09'),('F06','Search Console','No account authorization or ownership verification token is available; indexing, queries, and rankings cannot be confirmed.','S08'),('F07','AI and policy review','No live model or authorized product API connected. Full API/license review and product-specific evidence are required before expanding automation.','S02'),('F08','Topic mismatch','Observed destinations are home tools and organizers. Appliance guides are general editorial hypotheses, not claims that submitted links lead to air fryers.','S04'),('F09','Authorship and testing','DIY HOME Editorial is a publication desk label, not a named human tester. Content is AI-assisted and no hands-on testing has taken place.','S07'),('F10','Legal and hosting review','Visible disclosures and policy gates are implemented, not a compliance certification. Confirm applicable law and hosting/program terms for the eventual business.','S01')]
- body='<p class="notice">These items do not block the static publication. They do block unsubstantiated product claims, affiliate-link activation, and claims of live campaign optimization. Nothing below declares the supplied short links invalid.</p>'+table(['ID','Item','Finding / next evidence needed','Status','Official manual-review reference'],[[i,t,d,pill(),link(s)] for i,t,d,s in flags])
- wp('flagged.html','Flagged for Review','Dated 20 November 2026. Unverified information stays visibly unverified.',body)
- body='<p>These official pages were retrieved on 20 November 2026. “Checked” describes the stated scope, not verification of every sentence on a linked site. Listing observations are not intended-product confirmations. No private account or reporting access was available.</p>'+table(['ID','Official source','Checked scope / limitations','Date'],[[s['id'],link(s['id']),e(s['note']),s['checked_at']] for s in S.values()])+'<p><a href="@/data/sources.json">Download source register (JSON) ↗</a></p>'
- wp('sources.html','Official source register','Links for manual review, with exact verification scope and no blanket certification.',body)
- body=intro('OUR APPROACH','A more considered home.','Useful questions. Smaller shortlists. Clear boundaries between what is known and what is not.')+'''<h2>Published by DIY HOME Editorial</h2><p>DIY HOME Editorial is the desk name for this independent, AI-assisted publication. It is not a claim of a named expert, a testing laboratory, or a person with first-hand product experience. Initial content was prepared on 20 November 2026.</p><h2>How we work</h2><p>We begin with practical buyer questions and official source records. Listing titles are observations; they are not proof of performance. We do not invent personal experience, review scores, demand, revenue, or product specifications. Our guides are planning checklists, not product tests.</p><h2>How the edit is organized</h2><p>The first edit follows the three unique destinations observed from the links supplied for this project. It is not a competitive ranking. Kitchen organization and wall-project categories describe those observations; appliance planning is a separate cluster of question-led guides.</p><h2>Corrections and transparency</h2><p>Unresolved details are published on <a href="@/flagged.html">Flagged for Review</a>. Sources and records are in the <a href="@/workspace.html">Workspace</a>. Corrections can be filed through the <a href="https://github.com/kanlerxz87-cyber/DIYHOME3/issues">repository issue tracker ↗</a>; do not include private account information.</p>'''+sources(['S07','S01'])
- page('about.html','About the publication','Our editorial approach, AI-assisted authorship, and evidence standards.','<div class="article">'+body+'</div>')
- body=intro('CLEAR BY DESIGN','Privacy & disclosures','Understand how this publication is funded, what it measures, and what it does not know.')+'''<h2>Affiliate disclosure</h2><p><strong>As an Amazon Associate I earn from qualifying purchases.</strong> This site is intended to use Amazon affiliate links. Purchase links are currently gated pending product-intent and account-workflow confirmation. Official listing references and supplied short links in the register are marked sponsored, even though no attribution is asserted. Amazon does not sponsor or endorse this publication.</p><h2>Prices and product information</h2><p>No live prices, discounts, availability, ratings, review counts, or independent test results are published here. Confirm the exact item, seller, and terms on the official destination before any purchase. Category artwork and the AI-generated kitchen image are illustrative, not product photographs.</p><h2>Measurement</h2><p>The public GitHub Pages site currently has no connected event collector. The supplied optional backend records only daily aggregate counts of five documented events. It uses no cookies, persistent visitor IDs, or email capture. It cannot infer orders or unique people. Browser DNT and Global Privacy Control suppress events when the service is connected.</p><p>GitHub states that Pages visitor IP addresses are logged for security. External sites, including Amazon, have their own privacy practices when you follow a link. A future backend host may also process request logs; the application’s data minimization does not control hosting-provider logs.</p><h2>Reader subscription</h2><p>The RSS feed needs no email address. There is no newsletter signup form and no mailing-list database.</p><h2>Policy scope</h2><p>The source register records what was checked. This publication is not legal advice or a certification of Associates compliance. The selected tracking ID was supplied by the project owner and has not been authenticated against an Associates account.</p>'''+sources(['S01','S07','S09'])
- page('privacy.html','Privacy & affiliate disclosures','Affiliate disclosure, privacy-minimizing analytics design, and hosting limitations.','<div class="article">'+body+'</div>')
- page('404.html','That page is not here','Find your way back to the DIY HOME edit.','<div class="container">'+intro('A SMALL DETOUR','Let’s get you back home.','That page is not part of the current edit.')+'<a class="button" href="@/index.html">Back to the publication ↗</a></div>',noindex=True)
-if __name__=='__main__':build()
+def validate(profile):
+    product_ids = {p['id'] for p in PRODUCTS}
+    assert len(product_ids) == len(PRODUCTS) and len(GUIDE) == len(GUIDES)
+    assert all(x['product'] in product_ids and x['observation_source'] in SOURCES and x['observed_redirect_target'] == SOURCES[x['observation_source']][1] for x in SUBMISSIONS)
+    assert all(s in SOURCES for g in GUIDES for _, _, s in g['sections'])
+    assert not (set(SPECIAL_LINKS) - product_ids)
+    if profile == 'pages' and SPECIAL_LINKS:
+        raise ValueError('Commercial links cannot be built in the Pages profile.')
+    for product_id, approved in SPECIAL_LINKS.items():
+        rows = [r for r in SUBMISSIONS if r['product'] == product_id]
+        url = urlsplit(approved['url'])
+        asin = url.path.removeprefix('/dp/')
+        required = ('intended_asin', 'official_listing_url', 'confirmed_on', 'confirmation_source')
+        if not all(all(r.get(k) for k in required) and r['intended_asin'] == asin and r['official_listing_url'] == f'https://www.amazon.com/dp/{asin}' and r['confirmation_source'] in SOURCES and date.fromisoformat(r['confirmed_on']) <= date.today() for r in rows):
+            raise ValueError(f'Missing or inconsistent intent evidence for {product_id}')
+        if url.scheme != 'https' or url.netloc != 'www.amazon.com' or not re.fullmatch(r'[A-Z0-9]{10}', asin) or not url.path.startswith('/dp/') or parse_qs(url.query).get('tag') != [TRACKING_ID]:
+            raise ValueError(f'Unsafe or mismatched Special Link for {product_id}')
+        if not all(approved.get(k) for k in ('destination_checked_on', 'report_checked_on', 'report_reference', 'policy_reviewed_on', 'reviewer')) or any(date.fromisoformat(approved[k]) > date.today() for k in ('destination_checked_on', 'report_checked_on', 'policy_reviewed_on')):
+            raise ValueError(f'Missing release sign-off for {product_id}')
+
+
+def src(key):
+    name, url = SOURCES[key]
+    rel = ' rel="sponsored noopener noreferrer"' if key in {'S10','S11','S12','S13','S14'} else ''
+    return f'<a href="{e(url, quote=True)}"{rel}>{e(name)}</a>'
+
+
+def table(headers, rows):
+    return '<div class="table-wrap" role="region" aria-label="Scrollable reference table" tabindex="0"><table><thead><tr>' + ''.join(f'<th scope="col">{e(h)}</th>' for h in headers) + '</tr></thead><tbody>' + ''.join('<tr>' + ''.join(f'<td>{cell}</td>' for cell in row) + '</tr>' for row in rows) + '</tbody></table></div>'
+
+
+def head(kicker, title, lead):
+    return f'<div class="page-head"><p class="eyebrow line">{e(kicker)}</p><h1>{e(title)}</h1><p class="lead">{e(lead)}</p></div>'
+
+
+def output(path, text):
+    out = ROOT / path
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if CHECK:
+        if not out.exists() or out.read_bytes() != text.encode():
+            raise SystemExit(f'Stale output: {path}; run python scripts/build.py')
+    else:
+        out.write_text(text, encoding='utf-8')
+
+
+def route(path, title, description, body, *, guide='', hidden=False, notfound=False):
+    pre = CANON if notfound else '../' * path.count('/')
+    home = pre or './'
+    key = guide or ('archive' if path in LEGACY else path.strip('/') or 'home')
+    brand = f'<a class="brand" href="{home}"><span class="mark"><img src="{pre}assets/mark.svg" alt="" width="39" height="39"></span><span>DIY Home Upgrades<small>The practical home edit</small></span></a>'
+    nav = ''.join(f'<a href="{pre+p if p else home}"'+ (' aria-current="page"' if p == path else '') + f'>{t}</a>' for p,t in SHOP.items())
+    desktop = ''.join(f'<a href="{pre+p}">{t}</a>' for p,t in DESK.items())
+    foot = ''.join(f'<a href="{pre+p}">{t}</a>' for p,t in {**DESK, 'feed.xml': 'RSS', 'privacy/': 'Privacy'}.items())
+    canonical = '' if notfound else f'<link rel="canonical" href="{CANON+path}">'
+    if hidden: canonical += '<meta name="robots" content="noindex,follow">'
+    schema = ''
+    if guide:
+        published_on = GUIDE[guide].get('published_on', DATE)
+        schema = '<script type="application/ld+json">'+json.dumps({'@context': 'https://schema.org','@type': 'Article','headline': title,'datePublished': published_on,'author': {'@type': 'Organization','name': BRAND},'mainEntityOfPage': CANON+path}).replace('<','\\u003c')+'</script>'
+    output('404.html' if notfound else path if path.endswith('.html') else path + 'index.html', f'''<!doctype html>
+<html lang="en" data-page="{key}"{' data-guide="'+guide+'"' if guide else ''}{' data-analytics="on"' if PROFILE == 'editorial' else ''}>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{e(title if path == '' and not notfound else title+' | '+BRAND)}</title><meta name="description" content="{e(description,quote=True)}">{canonical}
+<meta property="og:title" content="{e(title,quote=True)}"><meta property="og:description" content="{e(description,quote=True)}"><meta property="og:image" content="{CANON}assets/hero.jpg"><link rel="alternate" type="application/rss+xml" title="{BRAND}" href="{pre}feed.xml"><link rel="icon" href="{pre}assets/mark.svg"><link rel="stylesheet" href="{pre}assets/site.css">{schema}<script defer src="{pre}assets/analytics.js"></script></head>
+<body><a class="skip" href="#main">Skip to content</a><header class="mast"><div class="wrap mast-inner">{brand}<nav class="main-nav" aria-label="Main navigation">{nav}<details class="desk"><summary>Editorial desk</summary><div class="desk-menu">{desktop}</div></details></nav></div></header>
+<aside class="disclosure" aria-label="Affiliate disclosure">{ICON}{DISCLOSURE}</aside>
+<main id="main">{body}</main>
+<footer class="footer"><div class="wrap"><div class="footer-top">{brand}<nav class="footer-links" aria-label="Footer navigation">{foot}</nav></div><p>{DISCLOSURE} · Independent editorial project.</p></div></footer></body></html>
+''')
+    if not hidden:
+        INDEX.append(path)
+    TARGETS['page_view'].append(key)
+    if guide:
+        TARGETS['guide_view'].append(guide)
+
+
+def cta(product):
+    active = SPECIAL_LINKS.get(product['id'])
+    if not active: return ''
+    pid = product['id']
+    TARGETS['outbound_click'].append(pid)
+    TARGETS['reported_order'].append(pid)
+    return f'<div class="release-cta"><a class="button" href="{e(active["url"],quote=True)}" rel="sponsored noopener noreferrer" data-event="outbound_click" data-target="{pid}">See on Amazon · paid link {ARROW}</a></div>'
+
+
+def cards(pre):
+    return '<div class="grid">' + ''.join(f'''<article class="card"><a class="card-media" href="{pre}guides/{p['guide']}/"><img src="{pre}assets/{p['image']}.jpg" alt="{e(p['alt'])}" width="580" height="340" loading="lazy"><span class="badge">Project guide</span></a><div class="card-copy"><p class="label">{e(p['category'])}</p><h3><a href="{pre}guides/{p['guide']}/">{e(p['title'])}</a></h3><p>{e(p['blurb'])}</p>{cta(p) or f'<a class="text-link" href="{pre}guides/{p["guide"]}/">What to look for {ARROW}</a>'}</div></article>''' for p in PRODUCTS) + '</div>'
+
+
+def guide_list(collection, pre):
+    return '<div class="guide-list">' + ''.join(f'<article class="guide-row"><p class="label">{e(g["category"])}</p><div><h3><a href="{pre}{g["slug"]}/">{e(g["title"])}</a></h3><p>{e(g["intro"])}</p></div><a class="text-link" href="{pre}{g["slug"]}/" aria-label="Read: {e(g["title"],quote=True)}">{ARROW}</a></article>' for g in collection) + '</div>'
+
+
+def render():
+    route('', BRAND+' | Small changes, better spaces', 'Practical buying guides for wallpaper tools, kitchen organization, cookware storage and countertop appliances.', f'''
+<div class="wrap"><section class="hero" aria-labelledby="headline"><div class="hero-copy"><p class="eyebrow line">The home edit &nbsp; / &nbsp; No. 01</p><h1 id="headline">Small changes,<br><em>better spaces.</em></h1><p>Practical upgrades and honest buying guides for a home that works a little better every day.</p><div class="actions"><a class="button" href="shop/">Explore the shop <span aria-hidden="true">→</span></a><a class="text-link" href="guides/">Read buying guides {ARROW}</a></div></div><div class="hero-visual"><img fetchpriority="high" src="assets/hero.jpg" alt="Warm oak kitchen countertop with ceramic vase, linen and cutting boards" width="768" height="540"><span class="photo-note">The everyday kitchen</span></div></section>
+<section class="section" id="edits"><div class="section-head"><div><p class="eyebrow line">The shortlist</p><h2>Shop the home edit</h2><p>Three small projects that earn their space.</p></div><a class="text-link" href="shop/">Explore all categories <span aria-hidden="true">→</span></a></div>{cards('')}<p class="caption">Category illustrations, not product photos. Buying links are withheld until validated.</p></section>
+<section class="section reading"><div class="section-head"><div><p class="eyebrow line">Late autumn / Countertop appliances</p><h2>Before you buy</h2><p>Kitchen questions worth answering before you make room on the counter.</p></div><a class="text-link" href="guides/">All buying guides <span aria-hidden="true">→</span></a></div>{guide_list(GUIDES[3:6], 'guides/')}</section>
+<section class="feed-band"><div><h2>Follow the home edit</h2><p>Get new guides in your feed reader. No newsletter sign-up required.</p></div><a class="button" href="feed.xml" data-event="feed_click" data-target="rss">Get the RSS feed {ARROW}</a></section></div>''')
+    route('shop/', 'Shop the home edit', 'Compare supplies for walls and finishes, kitchen organization and cookware storage.', '<div class="wrap">'+head('The shortlist','Shop the home edit','Start with the small upgrade you want to make. These guides show what to check before buying.')+cards('../')+'<p class="caption">Category illustrations, not product photos. Buying links are withheld until validated.</p><p class="release-cta"><a class="text-link" href="../product-register/">See listing observations and link status →</a></p></div>')
+    route('guides/', 'Buying guides', 'Question-led buying guides for everyday DIY projects and countertop appliances.', '<div class="wrap">'+head('The reading room','Buying guides','Questions to ask before you buy, grouped by the room and the job.')+'<nav class="pill-nav" aria-label="Guide clusters"><a href="#home-projects">Small home projects</a><a href="#appliances">Countertop appliances</a></nav><h2 id="home-projects">Small home projects</h2>'+guide_list(GUIDES[:3],'')+'<div class="section"><h2 id="appliances">Countertop appliances</h2>'+guide_list(GUIDES[3:],'')+'</div></div>')
+    for g in GUIDES:
+        pic = next((p for p in PRODUCTS if p['guide']==g['slug']),None)
+        picture = f'<img src="../../assets/{pic["image"]}.jpg" alt="{e(pic["alt"])}" width="800" height="340"><p class="caption">Illustration of the category, not the observed listing.</p>' if pic else ''
+        paragraphs = ''.join(f'<section><h2>{e(h)}</h2><p>{e(text)}</p><div class="source-link">{src(source)}</div></section>' for h,text,source in g['sections'])
+        related = [v for v in GUIDES if v['slug'] != g['slug'] and (v in GUIDES[:3]) == (g in GUIDES[:3])][:2]
+        guide_date = date.fromisoformat(g.get('published_on', DATE))
+        label_date = guide_date.strftime('%B') + f' {guide_date.day}, {guide_date.year}'
+        route('guides/'+g['slug']+'/',g['title'],g['intro'],f'<article class="article">{head(g["category"],g["title"],g["intro"])}<p class="byline">By the DIY Home Upgrades editorial desk · <time datetime="{guide_date}">{label_date}</time> · Desk research, not hands-on testing</p>{picture}<div class="prose">{paragraphs}{cta(pic) if pic else ""}</div><div class="section reading"><h2>Keep reading</h2>{guide_list(related,"../")}</div></article>',guide=g['slug'])
+    desk_pages()
+    for old, (title, new) in LEGACY.items():
+        pre = '../' * old.count('/')
+        lead = 'This page has moved. The current edition no longer includes unvalidated affiliate offers or listing snapshots.'
+        route(old, title, lead, '<div class="wrap">'+head('From the archive', title, lead)+f'<a class="button" href="{pre+new}">Open the current page {ARROW}</a></div>', hidden=True)
+
+
+def desk_page(path, title, lead, body):
+    route(path+'/',title,lead,'<div class="wrap">'+head('Editorial desk',title,lead)+body+'</div>',hidden=True)
+
+
+def desk_pages():
+    desk_page('executive-summary','Executive summary','Launch decision: publish the editorial project; hold the affiliate rollout until the evidence and hosting are in place.', table(('Area','Finding','Official source'),[
+        ('Catalog','Four submissions, three unique links. The observations are wallpaper tools, a towel holder and a cookware rack; none confirms intended product identity.', ' · '.join(src(s) for s in ('S12','S13','S14'))),
+        ('Affiliate release',f'Requested tracking ID: <code>{TRACKING_ID}</code>. Enrollment, tracking attribution and compliance of the supplied short links are unverified. No paid links are live.',src('S01')+' · '+src('S02')),
+        ('Hosting','GitHub Pages carries the non-transactional editorial site only. Do not launch the affiliate business on Pages; migrate the public canonical to an eligible host before commercial release.',src('S04')),
+        ('Research','The seven guides are editorial starting points, not rankings or tests. Price, reviews, commissions, search demand and competitive performance are not published without authorized evidence.',src('S03')+' · '+src('S08')),
+        ('Publishing','Review possible guide topics every other Thursday, starting December 3, 2026. Publish only when evidence and review are ready. The sitemap and RSS update together from the guide register.',src('S06')),
+        ('Measurement','The collector is implemented and tested locally; GitHub Pages does not run it. Search Console ownership and Amazon reporting have not been verified.',src('S08')+' · '+src('S02')),
+        ('Disclosure','The Associates statement appears under the masthead and in the footer. Any released Special Link also gets adjacent paid-link text and a sponsored attribute.',src('S24')+' · '+src('S07')+' · '+src('S05')),
+    ])+'<p><a class="text-link" href="../flagged-for-review/">Open flagged items →</a></p>')
+    details = []
+    for r in SUBMISSIONS:
+        val = lambda k: e(str(r[k])) if r[k] else ''
+        details.append((str(r['row']), f'<code>{e(r["submitted_url"])}</code>',
+                        f'<a href="{e(r["observed_redirect_target"])}" rel="sponsored noopener noreferrer">{e(r["observed_asin"])}</a><br>{r["observed_on"]}',
+                        val('intended_asin'),val('official_listing_url'),val('confirmed_on'),
+                        src(r['confirmation_source']) if r['confirmation_source'] else '',
+                        ('Unverified intent; duplicate of #2' if r['duplicate_of'] else 'Unverified intent') if not r['confirmed_on'] else 'Intent confirmed', src(r['observation_source'])))
+    desk_page('product-register','Product register','The observed destination is a dated Amazon listing snapshot, not a confirmation of what the submitter intended.',
+        '<p class="notice">Submitted short links are preserved as text only. Observed targets are the final listing paths, with query strings removed. Prices, ratings, commission and availability are omitted.</p>'+table(('Row','Submitted URL','Observed redirect / date','Intended ASIN','Official listing URL','Confirmed on','Confirmation source','Status','Observation source'), details))
+    desk_page('flagged-for-review','Flagged for Review','These open items do not block the editorial site. They do block unsupported claims, affiliate publishing or production measurement.',table(('Flag','What is known','Release gate','Official source'),[
+        ('Intended products','Observed redirects show home-upgrade items, not the brief’s air-fryer hypotheses. The towel-holder URL was submitted twice.','Keep all four rows. Confirm intended ASIN and official URL separately.',src('S02')+' · '+src('S12')+' · '+src('S13')+' · '+src('S14')),
+        ('Special Links','Format, enrollment and attribution for the requested tag remain unresolved; the short links are not declared invalid.','Generate one Special Link per confirmed product in Associates Central. Verify destination and report attribution before any scale-up. Do not make a self-purchase.',src('S01')+' · '+src('S02')+' · '+src('S03')),
+        ('Commercial hosting','Pages is for the editorial release only.','Use hosting that permits the affiliate business before enabling shopping links.',src('S04')),
+        ('Price, reviews and commission','No authorized product feeds or reports in this session.','Review current API license, credentials, approvals, allowed data uses and display freshness; do not send Program Content to AI without permission.',src('S03')),
+        ('SG-29 · Search Console','No verified property or query report.','Verify the canonical URL-prefix property, submit the sitemap and review the Performance report; no ranking or indexing guarantee.',src('S08')+' · '+src('S06')),
+        ('Production analytics','No persistent approved deployment for the event service or enrolled report access.','Deploy the aggregate service and verify consent/privacy and log configuration before collection; ingest only authorized aggregate reports.',src('S04')+' · '+src('S02')),
+    ]))
+    events = [
+        ('page_view','Page initialized; not a unique visitor or session.',src('S04')),
+        ('guide_view','A guide initialized; also emits a page view.',src('S08')),
+        ('outbound_click','A validated, marked product link was activated. No redirects or interception; not an Amazon-reported click.',src('S01')+' · '+src('S05')),
+        ('feed_click','RSS button activated. Not a subscription or a feed open.',src('S06')),
+        ('reported_order','Authorized aggregate order count from Associates reporting only; never browser-derived.',src('S02')),
+    ]
+    desk_page('measurement','Measurement','The self-hosted collector has five event types. The Pages edition does not send events or report conversions.',table(('Event','Definition','Official reference'),events)+
+        '<h2>Campaign ledger</h2><p>No authorized observations loaded. Blank means no report, not zero.</p>'+table(('Timestamp (UTC)','Source / report reference','Channel','Eligible sessions','Clicks','Reported orders'),[( '', ' · '.join((src('S02'),src('S08'))),'','','','')])+
+        '<div class="prose"><h2>What to publish next</h2><p>During the fortnightly editorial review, compare query and landing-page impressions and clicks in Search Console. Pick one question where a guide can add a useful answer. Compare equivalent periods and label small samples; avoid interpreting onsite counts as sales. Reconcile orders separately against the enrolled Tracking ID report.</p><p>No conversion score or revenue forecast is presented.</p></div>')
+    labels = [('SG-27','Navigation labels: Shop, Guides and a single Editorial desk menu.','S08'),('SG-28','RSS ships and is discoverable in the masthead metadata and footer.','S06'),('SG-29','Search Console is pending verified ownership.','S08'),('SG-30','RSS is the reader follow option; no email address capture.','S06')]
+    desk_page('sources','Source library','Official sources and a dated verification record. References support the specific claim alongside them, not assumptions about the products.',table(('Ref.','Publisher / document','Reviewed'),[(s,src(s),DATE) for s in SOURCES])+ '<h2>Publication checklist</h2>'+table(('Row','Disposition','Reference'),[(i,e(a),src(s)) for i,a,s in labels]))
+    route('privacy/','Privacy','Event collection and privacy for the editorial release.', '<div class="wrap">'+head('Publication notes','Privacy','The GitHub Pages editorial release does not send custom analytics events or collect email addresses.')+'<div class="prose"><h2>RSS</h2><p>The feed can be read without signing up. Your feed reader may apply its own privacy terms.</p><h2>Optional first-party measurement</h2><p>On a configured self-hosted edition, the collector stores counts by UTC day, event type and fixed content ID. It does not store IP addresses, cookies, device IDs, user agents, referrers or full URLs. The browser honors Global Privacy Control and Do Not Track.</p><p>The static host may apply its own privacy practices. <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub General Privacy Statement</a>.</p></div></div>',hidden=True)
+    route('404','Page not found','Return to the home edit or browse the buying guides.', '<div class="wrap">'+head('Not found','That page has moved','Try the home edit or look for another guide.')+f'<a class="button" href="{CANON}">Back to the home edit</a></div>',hidden=True,notfound=True)
+
+
+def finish():
+    urls = ''.join(f'  <url><loc>{e(CANON+p)}</loc></url>\n' for p in INDEX)
+    output('sitemap.xml','<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+urls+'</urlset>\n')
+    items = ''
+    for g in sorted(GUIDES, key=lambda g: g.get('published_on', DATE), reverse=True):
+        link = e(CANON+'guides/'+g['slug']+'/')
+        published = format_datetime(datetime.fromisoformat(g.get('published_on', DATE)).replace(tzinfo=timezone.utc))
+        items += f'<item><title>{e(g["title"])}</title><link>{link}</link><guid>{link}</guid><description>{e(g["intro"]+" "+DISCLOSURE)}</description><pubDate>{published}</pubDate></item>\n'
+    output('feed.xml', f'<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>{BRAND}</title><link>{CANON}</link><description>Practical buying guides for the everyday home. {DISCLOSURE}</description><atom:link href="{CANON}feed.xml" rel="self" type="application/rss+xml"/>\n{items}</channel></rss>\n')
+    output('robots.txt',f'User-agent: *\nAllow: /\nSitemap: {CANON}sitemap.xml\n')
+    output('.nojekyll','')
+    output('data/products.json',json.dumps({'tracking_id_requested': TRACKING_ID, 'submissions': SUBMISSIONS, 'special_links': {}}, indent=2)+'\n')
+    output('analytics/targets.json',json.dumps({k:sorted(set(v)) for k,v in TARGETS.items()},indent=2)+'\n')
+
+
+if __name__ == '__main__':
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--check', action='store_true')
+    ap.add_argument('--profile', choices=('pages','editorial'), default='pages')
+    ap.add_argument('--url', default=PAGES_URL)
+    args = ap.parse_args()
+    CHECK, PROFILE, CANON = args.check, args.profile, args.url
+    parts = urlsplit(CANON)
+    if parts.scheme != 'https' or not re.fullmatch(r'[a-zA-Z0-9.-]+(?::\d+)?', parts.netloc) or not re.fullmatch(r'/(?:[a-zA-Z0-9_-]+/)*',parts.path) or parts.query or parts.fragment or (PROFILE == 'editorial' and (parts.hostname.endswith('github.io') or parts.path != '/')) or (PROFILE == 'pages' and CANON != PAGES_URL):
+        ap.error('Use the default Pages URL, or a non-Pages HTTPS origin ending in / for editorial.')
+    INDEX = []
+    TARGETS = {e: [] for e in ('page_view','guide_view','outbound_click','feed_click','reported_order')}
+    TARGETS['feed_click'].append('rss')
+    validate(PROFILE)
+    render()
+    finish()
