@@ -26,7 +26,7 @@ import { sources } from '../site/data/sources.mjs';
 import { AMAZON_DISCLOSURE, AMAZON_CONTENT_DISCLAIMER, AMAZON_PRICE_DISCLAIMER, SITE } from '../site/layout.mjs';
 import { EVENTS } from '../site/pages/dashboard.mjs';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'build');
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '.build');
 
 const results = [];
 function check(group, name, ok, detail) {

@@ -1,0 +1,5 @@
+# Retired baseline output. Regenerate with: node ../tools/build.mjs
+# Named with a leading dot so the integrated release checker (which skips any
+# path part starting with '.') never walks these 46 pages.
+*
+!.gitignore

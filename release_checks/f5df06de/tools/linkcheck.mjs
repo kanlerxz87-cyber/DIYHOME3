@@ -14,7 +14,7 @@ import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'build');
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '.build');
 
 function walk(dir, acc = []) {
   for (const e of readdirSync(dir)) {
