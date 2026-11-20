@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product &amp; Analytics Dashboard — DIY Home Upgrades</title>
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="masthead">
+    <div class="container masthead-inner">
+      <a class="brand" href="index.html">
+        DIY Home Upgrades
+        <span>Independent Buyer Guides · Tracking ID: shopnow047c-20</span>
+      </a>
+      <nav class="nav" aria-label="Primary Navigation">
+        <a href="index.html">Front Page</a>
+        <a href="guides.html">Buyer Guides</a>
+        <a href="dashboard.html" aria-current="page">Dashboard</a>
+        <a href="executive-summary.html">Executive Summary</a>
+        <a href="flagged.html">Flagged for Review</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="disclosure-strip" role="note" aria-label="Affiliate Disclosure">
+    <div class="container">
+      <strong>Affiliate Disclosure:</strong> As an Amazon Associate (Tracking ID: <code>shopnow047c-20</code>), we earn from qualifying purchases. Every outbound product link is marked <code>rel="sponsored"</code>.
+    </div>
+  </div>
+
+  <main class="container">
+    <h1>Product-Intent &amp; Analytics Dashboard</h1>
+    <p class="meta">Tracking ID: <code>shopnow047c-20</code> · Intended ASIN/URL fields and observed redirect targets are stored separately and never merged.</p>
+
+    <section aria-labelledby="analytics-heading">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
+        <h2 id="analytics-heading" style="margin:0;">Privacy-Preserving Event Counter (5 Defined Events)</h2>
+        <button id="export-analytics" class="btn" type="button">Export Events JSON</button>
+      </div>
+      <div id="analytics-summary" class="grid"></div>
+    </section>
+
+    <section aria-labelledby="register-heading">
+      <h2 id="register-heading">Product-Intent Confirmation Register</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Submitted Link (Sponsored)</th>
+              <th>Intended ASIN</th>
+              <th>Official Listing URL</th>
+              <th>Observed Redirect Target</th>
+              <th>Confirmation Date</th>
+              <th>Source</th>
+              <th>Verification</th>
+              <th>Compliance</th>
+              <th>Clicks</th>
+            </tr>
+          </thead>
+          <tbody id="dashboard-products-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="ledger-heading">
+      <h2 id="ledger-heading">Campaign Ledger (First-Party Reports Only)</h2>
+      <p class="meta">Empty until populated from authorized first-party Amazon Associates reports. No conversion score or revenue forecast is presented here.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Source</th>
+              <th>Channel</th>
+              <th>Eligible Sessions</th>
+              <th>Clicks</th>
+              <th>Reported Orders</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="6" class="blank-cell">No first-party report rows recorded yet. Add rows only from authorized Amazon Associates reports.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>Publication</h4>
+          <ul>
+            <li><a href="index.html">Front Page</a></li>
+            <li><a href="guides.html">Buyer Guides</a></li>
+            <li><a href="executive-summary.html">Executive Summary</a></li>
+            <li><a href="feed.xml">RSS Feed</a></li>
+            <li><a href="sitemap.xml">Sitemap</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Dashboard &amp; Compliance</h4>
+          <ul>
+            <li><a href="dashboard.html">Product &amp; Analytics Dashboard</a></li>
+            <li><a href="flagged.html">Flagged for Review</a></li>
+            <li><a href="data/products.json">Product Register (JSON)</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-disclosure">
+        <strong>Amazon Associates Disclosure:</strong> As an Amazon Associate (Tracking ID: <code>shopnow047c-20</code>), this site earns from qualifying purchases. All outbound product links carry <code>rel="sponsored noopener noreferrer"</code>.
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
