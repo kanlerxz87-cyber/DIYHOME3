@@ -189,11 +189,44 @@ adding. All are non-blocking.
 | **F-09** | *No Amazon imagery, with the licensing reason stated.* IP License §2(h) permits storing a **link** to a product image for at most 24 hours, after which content must be refreshed via PA-API, Creators API or a Data Feed. A static GitHub Pages site cannot refresh anything, so any embedded or linked Amazon image would be held far beyond the limit. The audit confirms the live site hotlinks none. Worth recording as the *reason*, so a future session does not "improve" the site by adding product photos. |
 | **F-21** | *The five events were never enumerated.* The brief says "record the five defined events" without naming them. The live site implements `page_view`, `guide_view`, `outbound_click`, `feed_click` and a bearer-gated `reported_order` (confirmed by reading `analytics/worker.js`, `assets/analytics.js`, `analytics/targets.json` and `data/events.md`). This baseline independently chose `page_view`, `disclosure_view`, `outbound_click`, `affiliate_click` and `reader_capture`. **Two sessions reading the same instruction produced two disjoint sets sharing only one name.** That is the clearest possible evidence the set needs an owner's decision, and it should be fixed before the collector goes live: event names cannot be changed later without losing comparability with everything already collected. |
 
-Also worth noting: this baseline's commission research **independently reproduced**
-the conflict the board already records. Four sources gave five different numbers
-for the same categories, and Amazon's *onsite* schedule (Kitchen 1.25%) differs
-from its standard off-site schedule — so quoting a rate without naming the
-schedule is meaningless even when the number is correct.
+### Commission rate — this baseline was wrong, and has been corrected
+
+This baseline originally flagged the commission rate as **unresolvable from official
+sources** (F-05, high severity), because the Program Policies page refers the reader
+to "the Appendix" and paging through that document reached the IP License instead.
+Four sources gave five different numbers, so the cells were left blank.
+
+**That conclusion was wrong.** The standard off-site schedule is published as its own
+help topic, and has now been fetched directly:
+
+| Category (Table 1, verbatim) | Rate |
+| --- | --- |
+| Physical Books, **Kitchen**, Automotive | **4.50%** |
+| Furniture, **Home**, **Home Improvement**, Lawn & Garden, **Tools**, Outdoors, Sports, Toys, Baby Products, Beauty, Headphones, and others | **3.00%** |
+| All Other Categories | 4.00% |
+
+Recorded as source **S16**. Two things follow:
+
+1. **One third-party figure was right all along.** amawp.com claimed Kitchen 4.50%
+   and Tools / Home / Home Improvement 3.00% — an exact match to the official table.
+   earnifyhub.com claimed Kitchen 5% and Home Improvement 8%, which is wrong. The
+   rule "leave it blank rather than guess" was still correct, because a third-party
+   match is not a source; but "unresolvable" was not.
+2. **The per-product rate is still not filled in**, for a narrower and more precise
+   reason. Amazon assigns commission by its own product category, which is not
+   necessarily the browse node rendered on the listing. For `B08FKW9JRM`
+   (Tools & Home Improvement) every candidate row is 3.00%, so that rate is
+   effectively determinate. For `B0BSKQW2T2` and `B08DY9HRWD` (Home & Kitchen) the
+   candidate rows disagree — Kitchen 4.50% against Home 3.00% — so those cells stay
+   blank until the assignment is read from Associates Central or an earnings report.
+
+The distinction between schedules is confirmed rather than merely suspected: Amazon's
+*onsite* schedule (S04) lists Kitchen at **1.25%** and Tools at **1.75%**, against
+**4.50%** and **3.00%** off-site. A rate quoted without naming its schedule is
+meaningless even when the number is correct.
+
+The live publication already records this table as its source `S15`, citing the same
+URL. This baseline reached it independently and corroborates it.
 
 ---
 

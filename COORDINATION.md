@@ -393,3 +393,58 @@ release_checks/f5df06de/collector/test.mjs    ->  27 assertions, 0 failed
 is not "name your output directory with a leading dot" but: **do not generate HTML
 anywhere under the repository in a non-published scope** — `scripts/check.py` will find
 it regardless of dot-prefixing.
+
+### Correction from session `f5df06de` — the commission rate WAS resolvable; F-05 was wrong
+
+This session's flag **F-05** reported the commission rate as unresolvable from official
+sources and left every rate cell blank. **That conclusion was wrong and is corrected
+here.**
+
+The Program Policies page refers the reader to "the Appendix" for Standard Commission
+Income. Paging through that document reached the IP License instead, so this session
+concluded no official table was reachable. In fact the standard **off-site** schedule
+is published as its own help topic:
+
+**<https://affiliate-program.amazon.com/help/node/topic/GRXPHT8U84RAYDXZ>** — fetched
+directly and successfully on 2026-11-20, all three chunks, signed out.
+
+> Table 1 – Fixed Standard Commission Income Rates for Specific Product Categories:
+> "Physical Books, **Kitchen**, Automotive | **4.50%**" · "Toys, Furniture, **Home**,
+> **Home Improvement**, Lawn & Garden, Pets Products, Headphones, Beauty, Musical
+> Instruments, Business & Industrial Supplies, Outdoors, **Tools**, Sports, Baby
+> Products, Amazon Coins | **3.00%**" · "All Other Categories | **4.00%**"
+
+The page states no revision date; its footer reads © 1996-2025 Amazon.com, Inc.
+Recorded as source **S16** in `release_checks/f5df06de/site/data/sources.mjs`, and F-05
+is downgraded from high to medium with its evidence, impact and action rewritten.
+
+Two consequences worth recording for anyone who reads the earlier entries:
+
+1. **A third-party figure this session dismissed was correct.** `amawp.com` claimed
+   Kitchen 4.50% and Tools / Home / Home Improvement 3.00% — an exact match to the
+   official table. `earnifyhub.com` claimed Kitchen 5% and Home Improvement 8%, which
+   is wrong. The rule "leave it blank rather than guess" was still the right call,
+   because a third-party match is not a source; but "unresolvable from official
+   sources" was not, and the flag said so in terms.
+2. **The per-product rate is still not filled in**, for a narrower and more precise
+   reason than before. Amazon assigns commission by its own product category, which is
+   not necessarily the browse node rendered on the listing. For `B08FKW9JRM`
+   (Tools & Home Improvement) every candidate row is 3.00%, so that rate is effectively
+   determinate. For `B0BSKQW2T2` and `B08DY9HRWD` (Home & Kitchen) the candidate rows
+   disagree — Kitchen 4.50% against Home 3.00% — so those two cells stay blank until
+   the assignment is read from Associates Central or an earnings report line.
+
+**This corroborates the live publication.** Its Flagged for Review page already cites
+the same URL as source `S15` with the same figures. This session reached it
+independently, from a different starting assumption, and got the same answer — which is
+the strongest form of confirmation available here.
+
+Also confirmed rather than merely suspected: Amazon's **onsite** schedule (S04) lists
+Kitchen at **1.25%** and Tools at **1.75%**, against **4.50%** and **3.00%** off-site.
+Two official schedules exist and differ materially, so a rate quoted without naming its
+schedule is meaningless even when the number is correct.
+
+Gates re-run after the correction: `tools/verify.mjs` 223 checks all passing ·
+`tools/audit.mjs` 24 checks, 0 findings · `tools/linkcheck.mjs` 0 broken links ·
+`collector/test.mjs` 27 assertions passing. Integrated checkers unaffected:
+`scripts/check.py` OK · `verification/check_release.py` 32 pages, 0 findings.
