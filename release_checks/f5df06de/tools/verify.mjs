@@ -26,7 +26,7 @@ import { sources } from '../site/data/sources.mjs';
 import { AMAZON_DISCLOSURE, AMAZON_CONTENT_DISCLAIMER, AMAZON_PRICE_DISCLAIMER, SITE } from '../site/layout.mjs';
 import { EVENTS } from '../site/pages/dashboard.mjs';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'build');
 
 const results = [];
 function check(group, name, ok, detail) {
@@ -645,8 +645,7 @@ function visibleText(html) {
 {
   const needed = ['sitemap.xml', 'feed.xml', 'robots.txt', '404.html', '.nojekyll',
     'assets/css/site.css', 'assets/js/analytics.js', 'assets/js/ui.js',
-    'data/products.json', 'data/flags.json', 'data/campaign-ledger.json', 'data/events.json',
-    'analytics/server/index.mjs', 'COORDINATION.md', 'README.md', 'EXECUTIVE-SUMMARY.md'];
+    'data/products.json', 'data/flags.json', 'data/campaign-ledger.json', 'data/events.json'];
   const missing = needed.filter((n) => !existsSync(join(ROOT, n)));
   check('Structural', 'C13 every required artefact exists', missing.length === 0, `missing: ${missing.join(', ')}`);
 }

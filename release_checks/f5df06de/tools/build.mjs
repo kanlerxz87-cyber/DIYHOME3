@@ -14,7 +14,7 @@
  *   node tools/linkcheck.mjs   internal link crawl
  */
 
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, cpSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -35,7 +35,7 @@ import {
 } from '../site/pages/static.mjs';
 import { renderBlocks, breadcrumbs, AMAZON_DISCLOSURE } from '../site/layout.mjs';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'build');
 const BUILD_DATE = '2026-11-20';
 const OUT = [];
 
@@ -456,6 +456,25 @@ write(
 /* ------------------------------------------------------------------ */
 
 write('.nojekyll', '');
+
+/* ------------------------------------------------------------------ */
+/* 8. Assets                                                           */
+/*    The retired baseline must stay self-contained and reproducible,   */
+/*    so its stylesheet, scripts and artwork are copied into build/     */
+/*    from the scope directories they were relocated to.                */
+/* ------------------------------------------------------------------ */
+const SCOPE = join(ROOT, '..');
+for (const [src, dest] of [
+  ['assets-css', 'assets/css'],
+  ['assets-js', 'assets/js'],
+  ['assets-img', 'assets/img'],
+]) {
+  const from = join(SCOPE, src);
+  if (!existsSync(from)) { console.error(`missing asset directory: ${src}`); process.exit(1); }
+  mkdirSync(join(ROOT, dest), { recursive: true });
+  cpSync(from, join(ROOT, dest), { recursive: true });
+}
+console.log('  assets: css, js and img copied into the build tree');
 
 /* ------------------------------------------------------------------ */
 
