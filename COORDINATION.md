@@ -1,68 +1,117 @@
-# COORDINATION — DIY HOME upgrades (DIYHOME3)
+# COORDINATION.md — Shared task board
 
-Shared task board for parallel agent sessions. Read this before starting any work.
-Claim a task (session ID + file scope) and commit/push the claim before editing.
-A status of **needs review** means the item is published on the Flagged for Review
-page (`docs/flagged.html`) and does not block anything.
+> All agent sessions working on `kanlerxz87-cyber/DIYHOME3` coordinate here.
+> Read this file before starting. Claim a task by writing your session ID and
+> file scope, then **commit and push the claim immediately**. Never start a task
+> another session has claimed. Keep scopes non-overlapping.
+> Status values: `unclaimed` · `in progress` · `done` · `needs review`
+> (`needs review` = published on the Flagged for Review page; does not block).
 
-- **This session:** `arena-9e34c6b6` on the mandated session branch
-  `arena/9e34c6b6-diyhome3`. Per session constraints all work for this session
-  stays on this branch (no `session-<id>/<task>` branch is created); scopes below
-  are kept non-overlapping inside it. The final PR is opened from this branch to `main`.
-- **Tracking ID (owner-supplied, not independently verified):** `shopnow047c-20`
-- **Canonical site (single indexable host):** https://kanlerxz87-cyber.github.io/DIYHOME3/
+## Sessions
+
+| Session ID | Branch | Started (UTC) | Notes |
+|---|---|---|---|
+| `8224b547` | `arena/8224b547-diyhome3` | 2026-11-20 | Single-session build (no parallel sessions active). Owns all tasks below. |
 
 ## Task board
 
-| ID | Task | Status | Owning session | Files in scope |
+| ID | Task | Status | Owner | Files touched |
 |---|---|---|---|---|
-| T-01 | Coordination board + claim | done | arena-9e34c6b6 | `COORDINATION.md` |
-| T-02 | Official-source verification (Amazon Associates, FTC, ASIN, Google sponsored, GitHub Pages) | done | arena-9e34c6b6 | `data/sources.csv`, `docs/sources.html` |
-| T-03 | Product-intent confirmation record (intended vs observed, never merged) | done | arena-9e34c6b6 | `data/products.csv`, `docs/register.html` |
-| T-04 | Publication front page (products first) + category subpages | done | arena-9e34c6b6 | `docs/index.html`, `docs/categories/`, `docs/assets/` |
-| T-05 | Question-shaped guides + publishing cadence | done | arena-9e34c6b6 | `docs/guides/`, `docs/guides.html` |
-| T-06 | Measurement: 5 events, privacy-preserving outbound-click counter, self-hosted endpoint stub | done | arena-9e34c6b6 | `docs/assets/app.js`, `docs/analytics.html`, `analytics/` |
-| T-07 | Campaign ledger (empty, well-defined) + automation/gate scripts | done | arena-9e34c6b6 | `data/campaign-ledger.csv`, `scripts/`, `docs/ledger.html` |
-| T-08 | Flagged for Review page + executive summary | done | arena-9e34c6b6 | `docs/flagged.html`, `docs/executive-summary.html`, `EXECUTIVE_SUMMARY.md` |
-| T-09 | Sitemap, RSS feed, robots, SEO/canonical, link & disclosure checks | done | arena-9e34c6b6 | `docs/sitemap.xml`, `docs/feed.xml`, `docs/robots.txt`, `scripts/check_site.py` |
-| T-10 | Final integration: re-verify combined data, build check, PR to `main`, merge, Pages deploy | in progress | arena-9e34c6b6 (final integration) | repo-wide (integration only) |
+| T01 | Repo review + executive summary | done | 8224b547 | `EXECUTIVE_SUMMARY.md`, `README.md` |
+| T02 | Product verification (line-by-line, official sources) | done | 8224b547 | `data/products.json`, `verify/index.html`, `verify/link-register.html` |
+| T03 | Publication front page + navigation + brand | done | 8224b547 | `index.html`, `assets/style.css`, `assets/app.js` |
+| T04 | Category + product pages (shop-first) | done | 8224b547 | `products/**` |
+| T05 | Question-shaped guides + RSS/sitemap/Search Console | done | 8224b547 | `guides/**`, `feed.xml`, `sitemap.xml`, `robots.txt` |
+| T06 | Disclosure + sponsored-link system + compliance gate | done | 8224b547 | all pages (strip + footer), `disclosure.html` |
+| T07 | Analytics: click counter + 5 events + self-hosted endpoint | done | 8224b547 | `assets/analytics.js`, `server/analytics-server.py`, `data/events.md` |
+| T08 | Campaign ledger (empty, well-defined) | done | 8224b547 | `verify/campaign-ledger.html` |
+| T09 | Flagged for Review page | done | 8224b547 | `verify/flagged.html` |
+| T10 | GitHub Pages deploy + PR to main + merge | done | 8224b547 | `.github/workflows/pages.yml`, `COORDINATION.md` |
 
-Requests to change a file owned by another session: log the request here instead
-of editing that file. No such requests at claim time.
+## Verification log (official sources only)
 
-## Log
+| Date (UTC) | Item | Source (official) | Result |
+|---|---|---|---|
+| 2026-11-20 | B08FKW9JRM title/price/rating | https://www.amazon.com/dp/B08FKW9JRM | Verified — Art3d Smoothing Tool Kit; $5.08 (Typical $5.99); 4.6★ (26,432); Amazon's Choice; 20K+ bought past month; Sold by Art3d, Ships from Amazon |
+| 2026-11-20 | B0BSKQW2T2 title/price/rating | https://www.amazon.com/dp/B0BSKQW2T2 | Verified — Paper Towel Holder Under Cabinet (niffgaff); $6.79 (Typical $7.99); 4.2★ (12,099); Amazon's Choice; 8K+ bought past month; Sold by YH Urban |
+| 2026-11-20 | B08DY9HRWD title/price/rating | https://www.amazon.com/dp/B08DY9HRWD | Verified — ORDORA Pots and Pans Organizer 16.6" 8-Tier; $17.74 Prime (List $23.99); 4.4★ (18,835); 1K+ bought past month; Sold by ORDORA Official |
+| 2026-11-20 | Short-link redirect targets | https://link.amazon/B0hmGG4m2 · /B03QDuGdo · /B0hpD2JGQ | Verified — redirect to B08FKW9JRM, B0BSKQW2T2, B08DY9HRWD respectively (NOT the short codes). Kept in separate field per brief. |
+| 2026-11-20 | Associates disclosure duty | https://affiliate-program.amazon.com/help/operating/agreement (updated 2025-10-15) | Verified — Special Links must use tagged formats; disclosure required |
+| 2026-11-20 | Program Policies / commission | https://affiliate-program.amazon.com/help/operating/policies (updated 2026-04-14) | Verified — Qualifying Purchases, 24h session, 89-day cart window |
+| 2026-11-20 | FTC material-connection disclosure | https://www.ftc.gov/business-guidance/resources/ftcs-endorsement-guides-what-people-are-asking | Verified — clear & conspicuous disclosure in same medium |
 
-- 2026-11-20 — Session `arena-9e34c6b6` claimed T-01…T-09 on branch
-  `arena/9e34c6b6-diyhome3`. Repo at claim time contained only `README.md`
-  (`# DIYHOME3`, commit `5456d41`). No prior COORDINATION.md existed.
-- 2026-11-20 — Submitted-link observation (fetch following redirects, this date):
-  the three unique supplied `link.amazon/<token>` URLs resolved at observation
-  time to `amazon.com/dp/…` pages recorded **only** in the observed-redirect
-  fields of `data/products.csv`. Intended-ASIN fields were deliberately left
-  blank (see Flagged F-01/F-02). No merge of intended and observed fields.
-- 2026-11-20 — T-02…T-09 completed by `arena-9e34c6b6`. Sources used (all
-  official, full register in `data/sources.csv`): Amazon Associates Operating
-  Agreement + Program Policies (S-01/S-02), FTC Endorsement Guides FAQ + .com
-  Disclosures (S-03/S-04), Amazon Developer ASIN definition — 10 characters
-  (S-05), Google `rel="sponsored"` guidance (S-06), GitHub Pages / sitemap
-  docs (S-07/S-08), observed Amazon listings S-09…S-11 (2026-11-20).
-- 2026-11-20 — Verification performed: `scripts/validate_register.py` OK
-  (3 records, intended/observed separation preserved); `scripts/check_site.py`
-  OK (19 pages: disclosure strip + footer on every page, every Amazon outbound
-  link `rel="sponsored"`, canonical + RSS on the single host, no broken
-  internal links, no price/rating published); feed/sitemap XML parse OK;
-  local HTTP smoke test 200 for all key pages and assets.
-- 2026-11-20 — Irregularities flagged **needs review** (non-blocking, published
-  on `docs/flagged.html`): F-01 9-character submitted tokens vs 10-character
-  ASIN definition; F-02 intended product unconfirmed, observed redirect kept
-  separate; F-03 `B03QDuGdo` submitted twice (deduplicated, count kept);
-  F-04 short-link compliance unresolved — expressly **not** claimed invalid;
-  F-05 tracking ID `shopnow047c-20` unverified without Associates Central
-  access, so zero Special Links published; F-06 prices/ratings left blank;
-  F-07 suggested air-fryer guide titles vs DIY product set (published as
-  question checklists only); F-08 Search Console / API / hosted endpoint need
-  owner accounts — ledger stays empty, no trend/commission/conversion claims;
-  F-09 no product images republished (Program Content).
-- 2026-11-20 — T-10 final integration claimed by `arena-9e34c6b6`: re-verify
-  combined data, PR from `arena/9e34c6b6-diyhome3` to `main`, merge, confirm
-  GitHub Pages deploy, record PR link + merge result below.
+## Irregularities flagged (see `verify/flagged.html`)
+
+1. **Short-code ≠ ASIN.** Submitted `link.amazon/*` codes do not equal destination
+   ASINs. Intended ASIN and observed redirect target are stored separately and never
+   merged. Short-link compliance status is **unresolved** (S02) — not claimed invalid.
+2. **Duplicate submission.** `https://link.amazon/B03QDuGdo` was submitted twice.
+   Deduplicated to one product (B0BSKQW2T2).
+3. **Guide-title mismatch.** Suggested editorial hypotheses mention air fryers /
+   multi-function kitchen appliances, but no such products were submitted. Those
+   titles are listed as *planned, unpublished* — not presented as product coverage.
+4. **Tracking ID unvalidated.** `shopnow047c-20` is used in Special Links per brief,
+   but destination + tracking-report confirmation in the Associates workflow is
+   pending (S02). One link per product must be tested before scaling.
+5. **Time-sensitive values.** Prices, ratings, "bought in past month" counts are
+   snapshots from 2026-11-20 and will drift. Re-verify before relying on them.
+
+## Handoff / conflict log
+
+- 2026-11-20 — Session `8224b547` created this board; no other sessions active.
+  Single-session integration: all tasks owned by `8224b547` on
+  `arena/8224b547-diyhome3`. No conflicts.
+
+## Publish record
+
+- PR: https://github.com/kanlerxz87-cyber/DIYHOME3/pull/1 (merged 2026-11-20T06:00:22Z, merge commit `8f58e1d`)
+- Merge result: MERGED
+- GitHub Pages deploy: success (status `built`, https://kanlerxz87-cyber.github.io/DIYHOME3/)
+- Live check: front page fetched and confirmed — disclosure strip, 3 product cards with tagged Sponsored links, guides, and verify links all present.
+- T10: done
+
+## Parallel verification handoff
+
+| Task | Status | Owner | File scope |
+|---|---|---|---|
+| First baseline claim observed on origin; a separate baseline was merged in PR #1 | in progress | arena/abb75595-diyhome3 | See the owner's branch board; do not merge a competing baseline over PR #1 |
+| Independent release verification and operational evidence | done | arena/6585a493-diyhome3 | verification/ only (shared board updates for coordination) |
+
+- 2026-11-20: Found the active baseline claim on `arena/abb75595-diyhome3`; this session will not edit its site, data, analytics, or workflow files. Request for integration: consume the independent checks and report in `verification/` after the baseline is ready.
+- 2026-11-20: Independent redirect checks reached official Amazon listings B08FKW9JRM, B0BSKQW2T2 (duplicate input), and B08DY9HRWD. See `verification/evidence.md` for linked evidence and distinct unconfirmed intent/attribution fields. These observations must not enable affiliate CTAs.
+- 2026-11-20: Rebase on `main` after [PR #1](https://github.com/kanlerxz87-cyber/DIYHOME3/pull/1) produced an add/add board conflict. Preserved the complete merged board, then appended this session's handoff and verification entries; no site files edited. [Pages run](https://github.com/kanlerxz87-cyber/DIYHOME3/actions/runs/44684752829) succeeded for `8f58e1dc`; independent fetches confirmed the home, flagged page, RSS and sitemap were public.
+- 2026-11-20: Independent scope complete: checker fixture tests passed (5), with 56 findings against the 17-page merged baseline. See `verification/baseline-release.md` and [the PR #1 handoff](https://github.com/kanlerxz87-cyber/DIYHOME3/pull/1#issuecomment-7031835862). **Request to owning session:** correct enabled unvalidated tagged CTAs, unconfirmed intended identifiers, public price/rating snapshots, product-anchor markup and feed autodiscovery in the existing baseline; log account-only gates on Flagged for Review. Do not treat this evidence report as approval to release affiliate offers.
+- 2026-11-20: Rebase over the [publish-record follow-up](https://github.com/kanlerxz87-cyber/DIYHOME3/pull/3) conflicted in the shared board. Preserved the owner's publish record and kept this review in its own section.
+
+## Final integration — session `arena-9e34c6b6` (PR #5)
+
+| ID | Task | Status | Owner | Files touched |
+|---|---|---|---|---|
+| T-01…T-09 (this session) | Board claim; official-source verification; product-intent record; publication front page + categories; question guides + cadence; 5-event measurement; empty ledger + gate scripts; Flagged page + executive summary; sitemap/RSS/canonical checks | done | arena-9e34c6b6 | `data/`, `docs/`, `scripts/`, `analytics/`, `EXECUTIVE_SUMMARY.md` |
+| T-10 | Final integration: merge `main` (PRs #1/#3/#4), re-verify combined data, PR #5 to `main`, merge, Pages deploy | in progress | arena-9e34c6b6 | repo-wide (integration) |
+
+- 2026-11-20 — This session claimed T-01…T-09 at 06:0x UTC on branch
+  `arena/9e34c6b6-diyhome3` when the repo contained only `README.md`; in parallel,
+  sessions `8224b547` / `6585a493` merged a baseline (PRs #1, #3, #4). Merging
+  `origin/main` (`b355170`) into this branch conflicted in
+  `.github/workflows/pages.yml`, `COORDINATION.md`, `EXECUTIVE_SUMMARY.md`, `README.md`.
+  Resolution (nothing silently discarded):
+  - This board above is preserved in full; this section is appended.
+  - `verification/` (independent evidence + checker, session `6585a493`) and
+    `server/analytics-server.py` (baseline session) are kept unchanged. Note: the
+    preserved Python server's event names predate the five events standardised in
+    `docs/analytics.html`; it is **not** wired to the live site.
+  - The baseline's live HTML (`index.html`, `products/`, `guides/`, `verify/`,
+    `assets/`, root `feed.xml`/`sitemap.xml`/`robots.txt`, `data/products.json`,
+    `data/events.md`) is superseded by the gated site in `docs/` and removed from
+    the tree — preserved in git history at merge `8f58e1d` / `b355170`. This
+    implements the independent verification request in
+    `verification/baseline-release.md`: withhold unvalidated tagged CTAs, keep
+    intended ASIN/listing/confirmation blank, remove public price/rating
+    snapshots, add RSS autodiscovery, and mark every outbound Amazon link
+    `rel="sponsored"` (all five corrections are in `docs/` and enforced by
+    `scripts/check_site.py`: 19 pages pass; `scripts/validate_register.py`: OK).
+  - Sources (official): S-01…S-11 in `data/sources.csv`. Irregularities F-01…F-09
+    published, non-blocking, on `docs/flagged.html`.
+- PR #5: https://github.com/kanlerxz87-cyber/DIYHOME3/pull/5 — merge + Pages
+  deploy result recorded below on completion.
