@@ -69,3 +69,12 @@
 - GitHub Pages deploy: success (status `built`, https://kanlerxz87-cyber.github.io/DIYHOME3/)
 - Live check: front page fetched and confirmed — disclosure strip, 3 product cards with tagged Sponsored links, guides, and verify links all present.
 - T10: done
+
+## Parallel verification handoff
+
+| Task | Status | Owner | File scope |
+|---|---|---|---|
+| First baseline claim observed on origin; a separate baseline was merged in PR #1 | in progress | arena/abb75595-diyhome3 | See the owner's branch board; do not merge a competing baseline over PR #1 |
+| Independent release verification and operational evidence | in progress | arena/6585a493-diyhome3 | verification/ only (shared board updates for coordination) |
+
+- 2026-11-20: Found the active baseline claim on `arena/abb75595-diyhome3`; this session will not edit its site, data, analytics, or workflow files. Request for integration: consume the independent checks and report in `verification/` after the baseline is ready.
