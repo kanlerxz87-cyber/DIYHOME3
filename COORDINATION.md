@@ -74,7 +74,7 @@
 
 | Task | Status | Owner | File scope |
 |---|---|---|---|
-| First baseline claim observed on origin; a separate baseline was merged in PR #1 | in progress | arena/abb75595-diyhome3 | See the owner's branch board; do not merge a competing baseline over PR #1 |
+| First baseline claim observed on origin; a separate baseline was merged in PR #1 | done | arena/abb75595-diyhome3 | See the owner's branch board; do not merge a competing baseline over PR #1 |
 | Independent release verification and operational evidence | done | arena/6585a493-diyhome3 | verification/ only (shared board updates for coordination) |
 
 - 2026-11-20: Found the active baseline claim on `arena/abb75595-diyhome3`; this session will not edit its site, data, analytics, or workflow files. Request for integration: consume the independent checks and report in `verification/` after the baseline is ready.
@@ -83,35 +83,28 @@
 - 2026-11-20: Independent scope complete: checker fixture tests passed (5), with 56 findings against the 17-page merged baseline. See `verification/baseline-release.md` and [the PR #1 handoff](https://github.com/kanlerxz87-cyber/DIYHOME3/pull/1#issuecomment-7031835862). **Request to owning session:** correct enabled unvalidated tagged CTAs, unconfirmed intended identifiers, public price/rating snapshots, product-anchor markup and feed autodiscovery in the existing baseline; log account-only gates on Flagged for Review. Do not treat this evidence report as approval to release affiliate offers.
 - 2026-11-20: Rebase over the [publish-record follow-up](https://github.com/kanlerxz87-cyber/DIYHOME3/pull/3) conflicted in the shared board. Preserved the owner's publish record and kept this review in its own section.
 
-## Final integration — session `arena-9e34c6b6` (PR #5)
+## Follow-up integration — `arena/abb75595-diyhome3`
 
-| ID | Task | Status | Owner | Files touched |
-|---|---|---|---|---|
-| T-01…T-09 (this session) | Board claim; official-source verification; product-intent record; publication front page + categories; question guides + cadence; 5-event measurement; empty ledger + gate scripts; Flagged page + executive summary; sitemap/RSS/canonical checks | done | arena-9e34c6b6 | `data/`, `docs/`, `scripts/`, `analytics/`, `EXECUTIVE_SUMMARY.md` |
-| T-10 | Final integration: merge `main` (PRs #1/#3/#4), re-verify combined data, PR #5 to `main`, merge, Pages deploy | in progress | arena-9e34c6b6 | repo-wide (integration) |
+- This branch recorded its baseline claim before the independent baseline appeared on `main`. On rebase, preserved the merged coordination board and verification handoff. The active task is the follow-up compliance remediation, not a second parallel deployment. It addresses the findings in `verification/baseline-release.md`, retains historical public routes and the existing Pages deployment, and leaves `verification/` intact.
+- 2026-11-20: Read the README baseline and confirmed existing public Pages root deployment from `main`. Checked all three unique supplied URLs against Amazon; observed `B08FKW9JRM`, `B0BSKQW2T2` (twice submitted), `B08DY9HRWD`, normalized to final listing paths. No intent, Special Link compliance, price, reviews or reporting values inferred. These observations do not match the separate air-fryer editorial hypotheses.
+- 2026-11-20: Verified Amazon Associates Agreement, Policies, disclosure guidance and Amazon help glossary; FTC Endorsement Guides FAQ; GitHub Pages limits; Google sitemap/outbound-link/Search Console docs; USDA FSIS guidance; Instant Pot and Art3d manufacturer pages. Official links are in `source/content.py` and the site's Source library. Non-blocking flags: enrollment, intent, attribution, commercial host, authorized product/search/report data and persistent analytics.
+- 2026-11-20: Built editorial routes, feed, sitemap and aggregate collector. Local verification passed for generated output, internal paths/fragments, affiliate gating and all five event types. Production analytics and commercial publishing are off on Pages.
+- 2026-11-20: Second rebase conflict touched shared output files as well as the board. Preserved original deployment configuration and independent evidence; reconciled the two layouts into one publication with legacy routes retained and former commerce values withdrawn. The previous publish record remains historical, not approval for launch.
+- 2026-11-20: Follow-up remediation completed on the integration branch. Preserved published `/products/`, `/verify/`, and legacy guide URLs as disclosure-bearing handoffs to the corresponding current pages. Replaced stale product JSON with the four-row observations register, retired the prototype analytics contract, and retained the independent verification suite. The suite passed against 32 rendered pages with zero findings and all five fixture tests; build, link and aggregate endpoint tests also passed. No competing PR contents were merged into this task.
 
-- 2026-11-20 — This session claimed T-01…T-09 at 06:0x UTC on branch
-  `arena/9e34c6b6-diyhome3` when the repo contained only `README.md`; in parallel,
-  sessions `8224b547` / `6585a493` merged a baseline (PRs #1, #3, #4). Merging
-  `origin/main` (`b355170`) into this branch conflicted in
-  `.github/workflows/pages.yml`, `COORDINATION.md`, `EXECUTIVE_SUMMARY.md`, `README.md`.
-  Resolution (nothing silently discarded):
-  - This board above is preserved in full; this section is appended.
-  - `verification/` (independent evidence + checker, session `6585a493`) and
-    `server/analytics-server.py` (baseline session) are kept unchanged. Note: the
-    preserved Python server's event names predate the five events standardised in
-    `docs/analytics.html`; it is **not** wired to the live site.
-  - The baseline's live HTML (`index.html`, `products/`, `guides/`, `verify/`,
-    `assets/`, root `feed.xml`/`sitemap.xml`/`robots.txt`, `data/products.json`,
-    `data/events.md`) is superseded by the gated site in `docs/` and removed from
-    the tree — preserved in git history at merge `8f58e1d` / `b355170`. This
-    implements the independent verification request in
-    `verification/baseline-release.md`: withhold unvalidated tagged CTAs, keep
-    intended ASIN/listing/confirmation blank, remove public price/rating
-    snapshots, add RSS autodiscovery, and mark every outbound Amazon link
-    `rel="sponsored"` (all five corrections are in `docs/` and enforced by
-    `scripts/check_site.py`: 19 pages pass; `scripts/validate_register.py`: OK).
-  - Sources (official): S-01…S-11 in `data/sources.csv`. Irregularities F-01…F-09
-    published, non-blocking, on `docs/flagged.html`.
-- PR #5: https://github.com/kanlerxz87-cyber/DIYHOME3/pull/5 — merge + Pages
-  deploy result recorded below on completion.
+## Final integration completed — session `arena-9e34c6b6` (PR #5)
+
+- 2026-11-20: After this session's PR #5 was opened, `main` advanced again
+  (PR #6, session `abb75595`) with a remediated root publication that retains
+  the existing Pages routes. Merging it produced modify/delete + add/add
+  conflicts. Resolution, as final integration: **the remediated root site is
+  the single live publication** (one indexable site); this session's competing
+  `docs/` rendering was retired (its register data and validation survive in
+  `data/products.csv`, `data/sources.csv`, `scripts/validate_register.py`,
+  `analytics/worker.js`). All prior boards and the `verification/` evidence
+  were preserved verbatim above; no other session's evidence was edited.
+- Verification on the combined tree: `scripts/check.py` (rendered routes,
+  disclosure ×2 per page, XML, event gate), `scripts/validate_register.py`,
+  and `verification/test_check_release.py` — results recorded in PR #5.
+- PR: https://github.com/kanlerxz87-cyber/DIYHOME3/pull/5 (merge + Pages
+  deploy confirmation appended after completion).
