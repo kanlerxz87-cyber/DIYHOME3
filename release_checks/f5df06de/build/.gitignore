@@ -1,0 +1,3 @@
+# Retired baseline output. Regenerate with: node ../tools/build.mjs
+*
+!.gitignore

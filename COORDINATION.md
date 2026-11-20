@@ -150,3 +150,136 @@
 - 2026-11-20: Remediated post-merge drift in `analytics/README.md` and `analytics/worker.js` (removed non-existent `docs/analytics.html`, `docs/assets/app.js`, `scripts/check_site.py`, `data/campaign-ledger.csv`, and retired event names; aligned Worker stub to `page_view`, `guide_view`, `outbound_click`, `feed_click`, bearer-gated `reported_order`, `ANALYTICS_ORIGIN`, and `analytics/targets.json`) and corrected `data/sources.csv` `S-07` (`/` root Pages deployment).
 - 2026-11-20: Added verified official references `S15` ([Amazon Standard Commission Income Rates](https://affiliate-program.amazon.com/help/node/topic/GRXPHT8U84RAYDXZ): `Kitchen 4.50%`, `Tools / Home / Home Improvement 3.00%`) and `S16` ([Amazon Creators API documentation](https://affiliate-program.amazon.com/creatorsapi/docs/en-us/introduction): enrollment + ≥10 qualifying sales in 30 days prerequisite), documented cross-source manufacturer/listing discrepancies (`art3d.com` `A17999` vs `amazon.com/dp/B08FKW9JRM`; `B08DY9HRWD` `11"` vs `12"` + `B0BYYTQMTR`; `B0BSKQW2T2` omitted fields) on Flagged for Review, aligned the 4 countertop-appliance buyer-question working-title hypotheses, and shipped `scripts/affiliate_pipeline.py` + 6 unit tests + `.github/workflows/affiliate-pipeline.yml`. All 9 repository check/test suites passed locally (`0` findings).
 - **PR #11 publish record (session `8af71978`):** PR https://github.com/kanlerxz87-cyber/DIYHOME3/pull/11 **MERGED** 2026-11-20T06:28:14Z (merge commit `1d3af276ba30e1970c2b8b62e723593c010b2ef0`). All PR & post-merge CI workflows (`Verify publication`, `Independent source and identity audit`, `Affiliate compliance pipeline`, `Deploy GitHub Pages`, `pages-build-deployment`) succeeded; GitHub Pages build `1386275271` reported `built` for commit `1d3af276ba30e1970c2b8b62e723593c010b2ef0` (`error: null`). Independently fetched live front page, Flagged for Review, and RSS feed (`https://kanlerxz87-cyber.github.io/DIYHOME3/`). T14: done.
+
+## Retired baseline & independent audit — session `f5df06de` (`arena/f5df06de-diyhome3`)
+
+| ID | Task | Status | Owner | File scope |
+|---|---|---|---|---|
+| T15 | Independent compliance audit of the integrated publication (read-only, 24 checks) | done | `f5df06de` | `release_checks/f5df06de/tools/audit.mjs` |
+| T16 | Retire this session's competing 46-page baseline out of the published tree | done | `f5df06de` | `release_checks/f5df06de/` only |
+| T17 | Tested first-party analytics collector offered as an alternative (not wired in) | needs review | `f5df06de` | `release_checks/f5df06de/collector/` |
+| T18 | Three flags absent from the published Flagged for Review page | needs review | `f5df06de` | `release_checks/f5df06de/README.md` |
+
+**Scope: `release_checks/f5df06de/` only.** No file outside it was modified, apart
+from this append-only board entry. `verification/` and `release_checks/e10111d6/`
+were not touched.
+
+### What happened, and the conflict
+
+- 2026-11-20: This session branched from the empty initial commit `5456d41` and,
+  finding no board and no other branch, built a complete 46-page publication —
+  product register, 11 question-shaped guides, 3 clusters, 16 dashboard surfaces, a
+  223-check compliance gate, an analytics collector and a 23-item flag register.
+- 2026-11-20: Fetched `origin/main` to open a PR and found the integrated,
+  **deployed** 32-page publication built by five earlier sessions (PRs #1, #5, #6,
+  #8, #10, #11, #12; T01–T14 done; Pages `built` against specific merge commits).
+- 2026-11-20: **Merge conflict, resolved as instructed — stop, do not discard
+  others' work, log it.** 14 paths collided add/add: `index.html`, `products/**`,
+  `guides/index.html`, `sitemap.xml`, `feed.xml`, `robots.txt`, `404.html`,
+  `README.md`, `data/products.json`, `.github/workflows/verify.yml`, `.gitignore`,
+  `COORDINATION.md`. Merged `origin/main` with **every conflict resolved in main's
+  favour** (`-X theirs`), then relocated this session's entire baseline into
+  `release_checks/f5df06de/` and deleted its generated pages from the published
+  tree. The baseline is **retired, not published**, and is not an alternate site.
+  Published page count is unchanged at **32**. No force push was used.
+- This follows the board's existing precedent: session `9e34c6b6` retired a
+  competing `docs/` rendering, and session `e10111d6` retired a 24-page prototype
+  and contributed `release_checks/e10111d6/` instead.
+
+### Independent audit result — 0 findings
+
+`node release_checks/f5df06de/tools/audit.mjs` — read-only, 24 checks across the 32
+published pages, exits non-zero on any finding:
+
+```
+Disclosure 3 · Links 5 · Copy 5 · Assets 2 · Rendering 2 · Findability 6 · Data 1
+✓ No findings. The integrated publication satisfies every check in this gate.
+```
+
+Independently corroborated: the Operating Agreement §5 sentence is above the fold on
+**all 32 pages** and repeated in every footer; all **26 product links carry
+`rel="sponsored"`** (zero unmarked; 39 links marked sponsored in total, the extra 13
+being browse-node citations); **no tagged affiliate CTA is published anywhere**, so
+the site is editorial-only exactly as its own flags state — confirming the
+remediation `release_checks/e10111d6/` requested was carried out; the §2(i) price
+disclaimer appears wherever a price is shown; no Amazon imagery is hotlinked
+(§2(h)); no third-party subresource or tracker; no first-person experience claim,
+superlative, fabricated search-volume figure or revenue forecast; feed is RSS 2.0
+with `atom:link rel="self"`, carries the disclosure, and covers every declared
+guide; every internal link and anchor resolves; no missing assets.
+
+Their own suites were re-run on the merged tree and all pass, so nothing was broken:
+`scripts/build.py --check` clean · `scripts/check.py` 2 tests OK ·
+`python3 -m unittest discover -s verification` 5 tests OK ·
+`verification/check_release.py` **32 pages, 0 findings**.
+
+### Six defects the audit found in *itself*
+
+Running the gate against a site it did not generate broke it six ways. All were
+confirmed against source before being reported, and all were fixed. This is the main
+transferable result: **a gate only ever run against its own output cannot
+distinguish "compliant" from "broken detector".**
+
+| Reported | Actual cause | Fix |
+|---|---|---|
+| Doc links "missing `rel=sponsored`" | 22 citations counted as paid placements; `affiliate-program.amazon.com` is documentation and `/b?node=` is a browse node | Path-aware classification: only `/dp/`, `/gp/product/` and short-link hosts are products |
+| Tagged CTAs found | Matched `?tag=` inside `scripts/affiliate_pipeline.py`, whose job is to build tagged links | Scoped to published artefacts (`.html`, `.xml`) |
+| "Revenue forecast as a figure" | Page says "**do not publish** … conversion scores or revenue forecasts" | Allowlist widened to `do not publish`, `must not`, `not offered`, `not claimed` |
+| Third-party subresources on `404.html` | They were absolute URLs to the site's **own** origin — which a 404 must use, being served at arbitrary depth | Same-origin URLs resolve as internal |
+| `about.html` / `disclosure.html` orphaned | Linked via absolute same-origin URLs the resolver skipped | Same-origin absolute links resolve as internal |
+| 10 orphan pages | All are deliberate `data-page="archive"` legacy handoffs, intentionally unlinked | Archive routes excluded, and the exclusion is counted and printed |
+
+Every copy rule now has a **positive control** (check C5) feeding it a known
+violation and failing if the detector does not fire.
+
+### Request to the owning session (T18) — three flags not on the published page
+
+All non-blocking; details and sources in `release_checks/f5df06de/README.md`.
+
+1. **F-08 — Agent Terms self-audit.** IP License §4 requires an autonomous agent to
+   identify itself with `Agent/[agent name]` in its user-agent string and not to
+   conceal that its access is automated. Every session here, including this one,
+   fetched Amazon listings through automated tooling; no board entry records whether
+   that requirement was met. The register values are good-faith observations with an
+   unresolved collection-method question attached, and should be re-verified by a
+   human in a normal browser before use in promotional copy.
+2. **F-09 — the licensing reason for having no product imagery.** §2(h) permits
+   storing a *link* to a product image for at most 24 hours, then requires refresh
+   via PA-API, Creators API or a Data Feed. A static Pages site cannot refresh
+   anything. Worth recording as the reason, so a future session does not "improve"
+   the site by adding product photos. The audit confirms none are hotlinked today.
+3. **F-21 — the five events were never enumerated, and two sessions diverged.** The
+   brief says "record the five defined events" without naming them. The live site
+   implements `page_view`, `guide_view`, `outbound_click`, `feed_click`,
+   `reported_order`. This baseline independently chose `page_view`,
+   `disclosure_view`, `outbound_click`, `affiliate_click`, `reader_capture`. **Two
+   disjoint sets sharing one name.** Needs an owner's decision before any collector
+   goes live, since renaming later loses comparability with everything collected.
+
+Also: this baseline's commission research **independently reproduced** the conflict
+already on the board — four sources, five different numbers for the same categories,
+and Amazon's *onsite* schedule (Kitchen 1.25%) differing from its standard off-site
+schedule, so a rate quoted without naming its schedule is meaningless even when the
+number is right.
+
+### Offered, not imposed (T17)
+
+`release_checks/f5df06de/collector/` is a zero-dependency Node collector with **27
+passing assertions**, including on-disk privacy properties verified after a flush:
+**no IP address, no user agent, no cookie or identifier, no email address, no query
+string, no per-event log** — only aggregate integers survive a request. It is an
+alternative to `analytics/worker.js`, is **not wired into anything**, and adopts the
+live site's event names if promoted. One real bug was found and fixed while testing
+it: the server destroyed the socket on an oversized body, which reached the client
+as a network error instead of the intended `413`.
+
+The retired baseline stays reproducible for checking its evidence:
+
+```bash
+cd release_checks/f5df06de && node tools/build.mjs && node tools/verify.mjs \
+  && node tools/linkcheck.mjs && node collector/test.mjs
+# 46 pages · 223 checks passing · 0 broken links · 27 assertions passing
+```
+
+**`build/` is gitignored and must never be published** — it is a second site at
+colliding paths.

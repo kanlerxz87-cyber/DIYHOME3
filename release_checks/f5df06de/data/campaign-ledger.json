@@ -1,0 +1,116 @@
+{
+  "$schema": "diyhome3/campaign-ledger/v1",
+  "generated": "2026-11-20",
+  "entries": [],
+  "schema": {
+    "entry_id": {
+      "type": "string",
+      "required": true,
+      "rule": "Immutable, assigned on entry, never reused"
+    },
+    "period_start": {
+      "type": "ISO 8601 date",
+      "required": true
+    },
+    "period_end": {
+      "type": "ISO 8601 date",
+      "required": true,
+      "rule": "Must be >= period_start"
+    },
+    "recorded_at": {
+      "type": "ISO 8601 timestamp",
+      "required": true,
+      "rule": "When the row was entered, not when the period ended"
+    },
+    "campaign": {
+      "type": "string",
+      "required": true,
+      "rule": "Must exist in campaigns; free text rejected"
+    },
+    "channel": {
+      "type": "enum",
+      "required": true,
+      "values": [
+        "organic-search",
+        "direct",
+        "rss",
+        "email",
+        "social",
+        "referral",
+        "unknown"
+      ]
+    },
+    "source_report": {
+      "type": "string",
+      "required": true,
+      "rule": "Exact report name the figures came from"
+    },
+    "source_export_date": {
+      "type": "ISO 8601 date",
+      "required": true,
+      "rule": "A figure without an export date is rejected"
+    },
+    "tracking_id": {
+      "type": "string",
+      "required": true,
+      "rule": "Must match the register tracking ID"
+    },
+    "eligible_sessions": {
+      "type": "integer >= 0 or null",
+      "required": false,
+      "rule": "null = not reported; 0 = reported as zero. Never interchangeable"
+    },
+    "clicks": {
+      "type": "integer >= 0 or null",
+      "required": false,
+      "rule": "As above"
+    },
+    "reported_orders": {
+      "type": "integer >= 0 or null",
+      "required": false,
+      "rule": "As above"
+    },
+    "qualifying_revenue": {
+      "type": "number >= 0 or null",
+      "required": false,
+      "rule": "As defined by Amazon, net of the Commission Income Statement deductions"
+    },
+    "commission_income": {
+      "type": "number >= 0 or null",
+      "required": false,
+      "rule": "As reported. Never computed here from a rate"
+    },
+    "notes": {
+      "type": "string",
+      "required": false
+    }
+  },
+  "forbiddenFields": {
+    "conversion_score": "Prohibited by the project brief.",
+    "revenue_forecast": "Prohibited by the project brief, and unsupported by Operating Agreement Section 4."
+  },
+  "campaigns": [],
+  "provenance": [
+    {
+      "date": "2026-11-20",
+      "event": "Ledger schema defined and published",
+      "outcome": "Committed with an empty entries array"
+    },
+    {
+      "date": "2026-11-20",
+      "event": "Search for authorised first-party report data",
+      "outcome": "None available. No Associates Central access in this session"
+    },
+    {
+      "date": "2026-11-20",
+      "event": "Considered a third-party conversion estimate as a placeholder",
+      "outcome": "Rejected. A placeholder estimate becomes indistinguishable from a real figure"
+    },
+    {
+      "date": null,
+      "event": "First authorised report import",
+      "outcome": "Not yet occurred"
+    }
+  ],
+  "note": "Empty by design. Rows are added only from an authorised first-party report, with its name and export date recorded."
+}

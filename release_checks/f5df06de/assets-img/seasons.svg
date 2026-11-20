@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200" role="img" aria-labelledby="t3 d3">
+  <title id="t3">Seasonal calendar</title>
+  <desc id="d3">An abstract calendar band showing three dated windows along a timeline. No product is depicted.</desc>
+  <rect width="320" height="200" fill="#efeeea"/>
+  <path d="M24 120 H296" stroke="#16181c" stroke-width="4" stroke-linecap="round"/>
+  <g>
+    <rect x="46" y="52" width="74" height="52" rx="4" fill="#b4552d" opacity="0.85"/>
+    <rect x="136" y="52" width="74" height="52" rx="4" fill="#0f5c4a" opacity="0.8"/>
+    <rect x="226" y="52" width="60" height="52" rx="4" fill="none" stroke="#6b7280" stroke-width="2.5" stroke-dasharray="5 4"/>
+  </g>
+  <g stroke="#16181c" stroke-width="2.5"><path d="M46 112 V128M120 112 V128M136 112 V128M210 112 V128M226 112 V128M286 112 V128"/></g>
+  <text x="46" y="152" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="10.5" fill="#3d434d">VERIFIED</text>
+  <text x="136" y="152" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="10.5" fill="#3d434d">VERIFIED</text>
+  <text x="226" y="152" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="10.5" fill="#6b7280">PLANNING</text>
+  <text x="24" y="182" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="11" fill="#6b7280" letter-spacing="1">NO GUESSED DEMAND CURVES</text>
+</svg>

@@ -1,0 +1,20 @@
+{
+  "name": "diyhome3",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Amazon Associates property for reversible, low-cost home upgrades. Static site, zero dependencies, verification-first.",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "verify": "node tools/verify.mjs",
+    "linkcheck": "node tools/linkcheck.mjs",
+    "test:collector": "node analytics/server/test.mjs",
+    "check": "node tools/build.mjs && node tools/verify.mjs && node tools/linkcheck.mjs",
+    "serve": "node tools/serve.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
