@@ -1,47 +1,16 @@
-name: Compliance gate
-
-# Runs the build, the compliance and data gate, and the internal link crawl on
-# every push and pull request. A failure here means the site must not be merged:
-# the checks include the Amazon Associates disclosure placement, the sponsored
-# marking of every shopping-host link, the absence of Amazon imagery, and the
-# absence of unsourced or inferred values.
-
+name: Verify publication
 on:
   push:
-    branches: ['**']
   pull_request:
   workflow_dispatch:
-
 permissions:
   contents: read
-
 jobs:
-  gate:
-    name: Build, verify and linkcheck
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Build the site from the registry
-        run: node tools/build.mjs
-
-      - name: Fail if the build output was stale in the commit
-        run: |
-          if [ -n "$(git status --porcelain -- '*.html' sitemap.xml feed.xml robots.txt data/)" ]; then
-            echo "::error::Committed output does not match a fresh build. Run 'node tools/build.mjs' and commit the result."
-            git --no-pager diff --stat -- '*.html' sitemap.xml feed.xml robots.txt data/
-            exit 1
-          fi
-
-      - name: Compliance and data gate
-        run: node tools/verify.mjs
-
-      - name: Internal link crawl
-        run: node tools/linkcheck.mjs
-
-      - name: Analytics collector tests
-        run: node analytics/server/test.mjs
+      - run: python3 scripts/build.py --check
+      - run: python3 scripts/check.py
+      - run: python3 -m unittest discover -s verification -v
+      - run: python3 verification/check_release.py . --dashboard executive-summary/ --dashboard product-register/ --dashboard flagged-for-review/ --dashboard measurement/ --dashboard sources/ $(printf -- '--guide %s ' guides/*/)

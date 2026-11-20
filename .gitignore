@@ -1,4 +1,10 @@
+__pycache__/
+*.pyc
+data/events.jsonl
+analytics.sqlite3*
+# Session-local tooling, prototypes, and private runtime data
+.runtime/
+dist/
 node_modules/
-.arena/
-*.log
-.DS_Store
+*.sqlite*
+.env
