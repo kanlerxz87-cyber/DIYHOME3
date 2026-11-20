@@ -1,0 +1,15 @@
+{
+  "name": "DIY HOME",
+  "base_url": "https://kanlerxz87-cyber.github.io/DIYHOME3",
+  "tracking_id": "shopnow047c-20",
+  "analytics_endpoint": null,
+  "search_console_verified": false,
+  "model_connected": false,
+  "events": [
+    "page_view",
+    "guide_view",
+    "product_view",
+    "outbound_click",
+    "feed_click"
+  ]
+}

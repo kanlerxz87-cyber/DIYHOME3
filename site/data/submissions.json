@@ -1,0 +1,26 @@
+[
+  {
+    "position": 1,
+    "url": "https://link.amazon/B0hmGG4m2",
+    "product_id": "P01",
+    "duplicate_of": null
+  },
+  {
+    "position": 2,
+    "url": "https://link.amazon/B03QDuGdo",
+    "product_id": "P02",
+    "duplicate_of": null
+  },
+  {
+    "position": 3,
+    "url": "https://link.amazon/B03QDuGdo",
+    "product_id": "P02",
+    "duplicate_of": 2
+  },
+  {
+    "position": 4,
+    "url": "https://link.amazon/B0hpD2JGQ",
+    "product_id": "P03",
+    "duplicate_of": null
+  }
+]
