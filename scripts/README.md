@@ -18,6 +18,15 @@ python3 scripts/validate_register.py   # data/products.csv: ASIN shape (10 chars
                                        # separation, Special-Link gate, blank price/rating
 ```
 
+Post-integration automation & compliance-gate CLI added by session `8af71978`:
+
+```bash
+python3 scripts/affiliate_pipeline.py audit-repo             # cross-file register, 5-event, ledger & HTML policy gate
+python3 scripts/affiliate_pipeline.py commission-schedule    # official fixed category rates (zero forecast/score)
+python3 scripts/affiliate_pipeline.py validate-ledger analytics/ledger.csv --require-empty
+python3 -m unittest scripts/test_affiliate_pipeline.py -v    # unit tests for intake, Special Link, API/AI & ledger gates
+```
+
 Rules enforced across the integrated system:
 - Intended ASIN/listing/date/source and observed redirect targets are separate
   fields and are never copied into each other.
