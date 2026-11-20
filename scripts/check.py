@@ -37,7 +37,7 @@ class Page(HTMLParser):
 
 class Checks(unittest.TestCase):
     def test_site(self):
-        files = sorted(ROOT.glob('**/index.html')) + [ROOT/'404.html']
+        files = sorted(p for p in ROOT.rglob('*.html') if 'verification' not in p.relative_to(ROOT).parts)
         pages = {}
         for file in files:
             text = file.read_text()
@@ -61,7 +61,7 @@ class Checks(unittest.TestCase):
                 self.assertNotEqual(target.hostname,'link.amazon')
         sitemap = {v.text for v in ET.parse(ROOT/'sitemap.xml').findall('.//{*}loc')}
         feed = {v.text for v in ET.parse(ROOT/'feed.xml').findall('./channel/item/link')}
-        self.assertEqual(feed, {p for p in pages if '/guides/' in p and not p.endswith('/guides/')})
+        self.assertEqual(feed, {p for p in pages if '/guides/' in p and p.endswith('/') and not p.endswith('/guides/')})
         self.assertTrue(feed <= sitemap <= set(pages))
         for url in sitemap:
             self.assertNotIn('noindex', (ROOT / url.removeprefix(BASE) / 'index.html').read_text())

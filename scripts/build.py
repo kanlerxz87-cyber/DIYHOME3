@@ -19,6 +19,23 @@ BRAND = 'DIY Home Upgrades'
 DESK = {'executive-summary/': 'Executive summary', 'product-register/': 'Product register', 'flagged-for-review/': 'Flagged for Review', 'measurement/': 'Measurement', 'sources/': 'Source library'}
 SHOP = {'': 'Home', 'shop/': 'Shop', 'guides/': 'Guides'}
 GUIDE = {g['slug']: g for g in GUIDES}
+LEGACY = {
+    'about.html': ('About the home edit', 'executive-summary/'),
+    'disclosure.html': ('Disclosure and publishing standards', 'flagged-for-review/'),
+    'products/': ('Shop the home edit', 'shop/'),
+    'products/wallpaper-tools.html': ('Wallpaper tools', 'guides/wallpaper-tools/'),
+    'products/kitchen-organization.html': ('Kitchen organization', 'shop/'),
+    'products/art3d-smoothing-tool-kit.html': ('Wallpaper smoothing kits', 'guides/wallpaper-tools/'),
+    'products/niffgaff-paper-towel-holder.html': ('Under-cabinet paper towel holders', 'guides/paper-towel-holder/'),
+    'products/ordora-pots-pans-organizer.html': ('Adjustable cookware racks', 'guides/cookware-racks/'),
+    'guides/peel-and-stick-wallpaper-tools.html': ('Peel-and-stick wallpaper tools', 'guides/wallpaper-tools/'),
+    'guides/under-cabinet-paper-towel-holder.html': ('Under-cabinet paper towel holders', 'guides/paper-towel-holder/'),
+    'guides/pots-pans-organizer-cabinet-fit.html': ('Cookware rack cabinet fit', 'guides/cookware-racks/'),
+    'verify/': ('Editorial desk', 'sources/'),
+    'verify/link-register.html': ('Link register', 'product-register/'),
+    'verify/campaign-ledger.html': ('Campaign ledger', 'measurement/'),
+    'verify/flagged.html': ('Flagged for Review', 'flagged-for-review/'),
+}
 ARROW = '<span aria-hidden="true">↗</span>'
 ICON = '<svg width="13" height="13" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7" stroke="currentColor"/><path d="M9 8v5m0-8v1" stroke="currentColor" stroke-width="1.5"/></svg>'
 
@@ -71,7 +88,7 @@ def output(path, text):
 def route(path, title, description, body, *, guide='', hidden=False, notfound=False):
     pre = CANON if notfound else '../' * path.count('/')
     home = pre or './'
-    key = guide or path.strip('/') or 'home'
+    key = guide or ('archive' if path in LEGACY else path.strip('/') or 'home')
     brand = f'<a class="brand" href="{home}"><span class="mark"><img src="{pre}assets/mark.svg" alt="" width="39" height="39"></span><span>DIY Home Upgrades<small>The practical home edit</small></span></a>'
     nav = ''.join(f'<a href="{pre+p if p else home}"'+ (' aria-current="page"' if p == path else '') + f'>{t}</a>' for p,t in SHOP.items())
     desktop = ''.join(f'<a href="{pre+p}">{t}</a>' for p,t in DESK.items())
@@ -82,7 +99,7 @@ def route(path, title, description, body, *, guide='', hidden=False, notfound=Fa
     if guide:
         published_on = GUIDE[guide].get('published_on', DATE)
         schema = '<script type="application/ld+json">'+json.dumps({'@context': 'https://schema.org','@type': 'Article','headline': title,'datePublished': published_on,'author': {'@type': 'Organization','name': BRAND},'mainEntityOfPage': CANON+path}).replace('<','\\u003c')+'</script>'
-    output('404.html' if notfound else path + 'index.html', f'''<!doctype html>
+    output('404.html' if notfound else path if path.endswith('.html') else path + 'index.html', f'''<!doctype html>
 <html lang="en" data-page="{key}"{' data-guide="'+guide+'"' if guide else ''}{' data-analytics="on"' if PROFILE == 'editorial' else ''}>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title if path == '' and not notfound else title+' | '+BRAND)}</title><meta name="description" content="{e(description,quote=True)}">{canonical}
@@ -133,6 +150,10 @@ def render():
         label_date = guide_date.strftime('%B') + f' {guide_date.day}, {guide_date.year}'
         route('guides/'+g['slug']+'/',g['title'],g['intro'],f'<article class="article">{head(g["category"],g["title"],g["intro"])}<p class="byline">By the DIY Home Upgrades editorial desk · <time datetime="{guide_date}">{label_date}</time> · Desk research, not hands-on testing</p>{picture}<div class="prose">{paragraphs}{cta(pic) if pic else ""}</div><div class="section reading"><h2>Keep reading</h2>{guide_list(related,"../")}</div></article>',guide=g['slug'])
     desk_pages()
+    for old, (title, new) in LEGACY.items():
+        pre = '../' * old.count('/')
+        lead = 'This page has moved. The current edition no longer includes unvalidated affiliate offers or listing snapshots.'
+        route(old, title, lead, '<div class="wrap">'+head('From the archive', title, lead)+f'<a class="button" href="{pre+new}">Open the current page {ARROW}</a></div>', hidden=True)
 
 
 def desk_page(path, title, lead, body):
@@ -194,6 +215,7 @@ def finish():
     output('feed.xml', f'<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>{BRAND}</title><link>{CANON}</link><description>Practical buying guides for the everyday home. {DISCLOSURE}</description><atom:link href="{CANON}feed.xml" rel="self" type="application/rss+xml"/>\n{items}</channel></rss>\n')
     output('robots.txt',f'User-agent: *\nAllow: /\nSitemap: {CANON}sitemap.xml\n')
     output('.nojekyll','')
+    output('data/products.json',json.dumps({'tracking_id_requested': TRACKING_ID, 'submissions': SUBMISSIONS, 'special_links': {}}, indent=2)+'\n')
     output('analytics/targets.json',json.dumps({k:sorted(set(v)) for k,v in TARGETS.items()},indent=2)+'\n')
 
 

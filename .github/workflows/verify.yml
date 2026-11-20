@@ -12,3 +12,5 @@ jobs:
       - uses: actions/checkout@v4
       - run: python3 scripts/build.py --check
       - run: python3 scripts/check.py
+      - run: python3 -m unittest discover -s verification -v
+      - run: python3 verification/check_release.py . --dashboard executive-summary/ --dashboard product-register/ --dashboard flagged-for-review/ --dashboard measurement/ --dashboard sources/ $(printf -- '--guide %s ' guides/*/)

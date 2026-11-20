@@ -74,7 +74,7 @@
 
 | Task | Status | Owner | File scope |
 |---|---|---|---|
-| First baseline claim observed on origin; a separate baseline was merged in PR #1 | in progress | arena/abb75595-diyhome3 | See the owner's branch board; do not merge a competing baseline over PR #1 |
+| First baseline claim observed on origin; a separate baseline was merged in PR #1 | done | arena/abb75595-diyhome3 | See the owner's branch board; do not merge a competing baseline over PR #1 |
 | Independent release verification and operational evidence | done | arena/6585a493-diyhome3 | verification/ only (shared board updates for coordination) |
 
 - 2026-11-20: Found the active baseline claim on `arena/abb75595-diyhome3`; this session will not edit its site, data, analytics, or workflow files. Request for integration: consume the independent checks and report in `verification/` after the baseline is ready.
@@ -90,3 +90,4 @@
 - 2026-11-20: Verified Amazon Associates Agreement, Policies, disclosure guidance and Amazon help glossary; FTC Endorsement Guides FAQ; GitHub Pages limits; Google sitemap/outbound-link/Search Console docs; USDA FSIS guidance; Instant Pot and Art3d manufacturer pages. Official links are in `source/content.py` and the site's Source library. Non-blocking flags: enrollment, intent, attribution, commercial host, authorized product/search/report data and persistent analytics.
 - 2026-11-20: Built editorial routes, feed, sitemap and aggregate collector. Local verification passed for generated output, internal paths/fragments, affiliate gating and all five event types. Production analytics and commercial publishing are off on Pages.
 - 2026-11-20: Second rebase conflict touched shared output files as well as the board. Preserved original deployment configuration and independent evidence; reconciled the two layouts into one publication with legacy routes retained and former commerce values withdrawn. The previous publish record remains historical, not approval for launch.
+- 2026-11-20: Follow-up remediation completed on the integration branch. Preserved published `/products/`, `/verify/`, and legacy guide URLs as disclosure-bearing handoffs to the corresponding current pages. Replaced stale product JSON with the four-row observations register, retired the prototype analytics contract, and retained the independent verification suite. The suite passed against 32 rendered pages with zero findings and all five fixture tests; build, link and aggregate endpoint tests also passed. No competing PR contents were merged into this task.
