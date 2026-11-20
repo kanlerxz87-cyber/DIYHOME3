@@ -1,0 +1,15 @@
+name: Affiliate compliance pipeline
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compliance-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/validate_register.py
+      - run: python3 scripts/affiliate_pipeline.py audit-repo
+      - run: python3 -m unittest scripts/test_affiliate_pipeline.py -v
