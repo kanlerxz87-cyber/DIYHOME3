@@ -1,0 +1,13 @@
+name: Editorial review reminder
+on:
+  schedule:
+    - cron: '15 9 * * 4'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/plan.py >> "$GITHUB_STEP_SUMMARY"

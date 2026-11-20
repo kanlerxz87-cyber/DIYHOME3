@@ -1,0 +1,35 @@
+{
+  "page_view": [
+    "404",
+    "air-fryer-capacity",
+    "air-fryer-cleanup",
+    "basket-vs-oven",
+    "cookware-racks",
+    "executive-summary",
+    "flagged-for-review",
+    "guides",
+    "home",
+    "measurement",
+    "multi-function-appliances",
+    "paper-towel-holder",
+    "privacy",
+    "product-register",
+    "shop",
+    "sources",
+    "wallpaper-tools"
+  ],
+  "guide_view": [
+    "air-fryer-capacity",
+    "air-fryer-cleanup",
+    "basket-vs-oven",
+    "cookware-racks",
+    "multi-function-appliances",
+    "paper-towel-holder",
+    "wallpaper-tools"
+  ],
+  "outbound_click": [],
+  "feed_click": [
+    "rss"
+  ],
+  "reported_order": []
+}
