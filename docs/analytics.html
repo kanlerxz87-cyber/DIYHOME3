@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analytics & the five events · DIY Home Upgrades</title>
+<meta name="description" content="Privacy-preserving outbound-click counting and a self-hosted analytics endpoint. The five events, defined.">
+<link rel="canonical" href="https://kanlerxz87-cyber.github.io/DIYHOME3/analytics.html">
+<meta property="og:title" content="Analytics & the five events · DIY Home Upgrades">
+<meta property="og:description" content="Privacy-preserving outbound-click counting and a self-hosted analytics endpoint. The five events, defined.">
+<meta property="og:type" content="website"><meta property="og:url" content="https://kanlerxz87-cyber.github.io/DIYHOME3/analytics.html">
+<link rel="alternate" type="application/rss+xml" title="DIY Home Upgrades — new guides" href="https://kanlerxz87-cyber.github.io/DIYHOME3/feed.xml">
+<link rel="stylesheet" href="assets/style.css">
+<script>window.DIY_ANALYTICS_ENDPOINT="";</script>
+</head><body data-page-type="page">
+<header class="masthead"><div class="wrap">
+<a class="brand" href="index.html">DIY HOME <span>upgrades</span></a>
+<span class="tagline">Small fixes, honestly labelled.</span>
+<nav class="primary" aria-label="Primary">
+<a href="index.html">Shop</a>
+<a href="categories/kitchen-storage.html">Kitchen storage</a>
+<a href="categories/wallpaper-tools.html">Wallpaper tools</a>
+<a href="guides.html">Guides</a>
+<details><summary>Records ▾</summary><div class="menu">
+<a href="dashboard.html">Dashboard</a>
+<a href="register.html">Product register</a>
+<a href="flagged.html">Flagged for review</a>
+<a href="analytics.html">Analytics &amp; events</a>
+<a href="ledger.html">Campaign ledger</a>
+<a href="sources.html">Sources</a>
+<a href="executive-summary.html">Executive summary</a>
+</div></details></nav></div></header>
+<div class="disclosure" role="note"><div class="wrap"><strong>Disclosure:</strong> As an Amazon Associate I earn from qualifying purchases. Every outbound product link on this site is marked <strong>Sponsored</strong>. Until a link is marked “Validated” in the <a href="register.html">product register</a>, it carries no Associates tracking tag and earns us nothing. Prices and ratings are not published here — check Amazon for current terms. <a href="disclosure-privacy.html">Full disclosure &amp; privacy</a></div></div>
+<main class="wrap">
+
+<h1>Analytics &amp; the five events</h1>
+<p class="lede">Click and conversion measurement was switched on before any further content was written. Conversion (orders) can only come from the owner's authorised Associates reports — it is never estimated here.</p>
+<h2>The five defined events</h2>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Event</th><th>When it fires</th><th>Payload (complete)</th></tr></thead><tbody>
+<tr><td>1</td><td><code>page_view</code></td><td>Any page on this site is viewed</td><td rowspan="5">Event name, page path, product record ID where relevant, ISO timestamp. No cookies, no IP storage, no fingerprint, no search-query text.</td></tr>
+<tr><td>2</td><td><code>product_view</code></td><td>A product card becomes visible</td></tr>
+<tr><td>3</td><td><code>guide_view</code></td><td>A guide page is viewed</td></tr>
+<tr><td>4</td><td><code>outbound_click</code></td><td>A Sponsored outbound product link is clicked</td></tr>
+<tr><td>5</td><td><code>search_submit</code></td><td>The shop search/filter is used (query text is not stored)</td></tr>
+</tbody></table></div>
+<h2>Where events go</h2>
+<p><strong>Now:</strong> no hosted endpoint is configured (<code>DIY_ANALYTICS_ENDPOINT=""</code>), so events are counted only in your own browser (<code>localStorage</code>) and shown below on this device. Nothing leaves the browser.</p>
+<p><strong>To go live:</strong> deploy the self-hosted endpoint stub in the repository (<code>analytics/worker.js</code> — a Cloudflare-Worker-style receiver that appends one JSON line per event, storing no IP), then set <code>window.DIY_ANALYTICS_ENDPOINT</code> in <code>docs/assets/app.js</code> to its URL. Instructions: <code>analytics/README.md</code>.</p>
+<h2>This browser's local counts</h2>
+<div class="tablewrap"><table><thead><tr><th>Event</th><th>Count (this browser)</th></tr></thead><tbody id="local-event-counts"></tbody></table></div>
+<p class="small">Reported orders belong in the <a href="ledger.html">campaign ledger</a> and may only be entered from authorised first-party (Associates) reports, with a dated provenance note.</p>
+
+</main><footer><div class="wrap">
+<div class="cols">
+<div><strong>Shop by category</strong><ul>
+<li><a href="categories/kitchen-storage.html">Kitchen storage &amp; organization</a></li>
+<li><a href="categories/wallpaper-tools.html">Wallpaper tools</a></li>
+<li><a href="index.html">All products</a></li></ul></div>
+<div><strong>Guides</strong><ul>
+<li><a href="guides.html">All buying-question guides</a></li>
+<li><a href="feed.xml">New guides by RSS</a></li>
+<li><a href="sitemap.xml">Sitemap</a></li></ul></div>
+<div><strong>Records &amp; dashboards</strong><ul>
+<li><a href="dashboard.html">Dashboard</a></li>
+<li><a href="register.html">Product-intent register</a></li>
+<li><a href="flagged.html">Flagged for review</a></li>
+<li><a href="analytics.html">Analytics &amp; the five events</a></li>
+<li><a href="ledger.html">Campaign ledger</a></li>
+<li><a href="sources.html">Sources</a></li>
+<li><a href="executive-summary.html">Executive summary</a></li></ul></div>
+<div><strong>About this publication</strong><ul>
+<li><a href="disclosure-privacy.html">Disclosure &amp; privacy</a></li>
+<li><a href="guides.html#cadence">Publishing cadence</a></li></ul>
+<p class="small">Edited by the DIY Home Upgrades editorial desk. No product is recommended as “best” — we publish what can be checked, and flag the rest.</p></div>
+</div>
+<p class="small"><strong>Disclosure, repeated:</strong> As an Amazon Associate I earn from qualifying purchases. Outbound product links are marked Sponsored and use <code>rel="sponsored nofollow noopener"</code>. DIY Home Upgrades is a participant in the Amazon Services LLC Associates Program. Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates. · Tracking ID on file (owner-supplied, pending validation): <code>shopnow047c-20</code> · Last updated 2026-11-20</p>
+</div></footer>
+<script src="assets/app.js"></script></body></html>
