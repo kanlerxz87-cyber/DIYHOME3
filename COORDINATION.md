@@ -78,3 +78,4 @@
 | Independent release verification and operational evidence | in progress | arena/6585a493-diyhome3 | verification/ only (shared board updates for coordination) |
 
 - 2026-11-20: Found the active baseline claim on `arena/abb75595-diyhome3`; this session will not edit its site, data, analytics, or workflow files. Request for integration: consume the independent checks and report in `verification/` after the baseline is ready.
+- 2026-11-20: Independent redirect checks reached official Amazon listings B08FKW9JRM, B0BSKQW2T2 (duplicate input), and B08DY9HRWD. See `verification/evidence.md` for linked evidence and distinct unconfirmed intent/attribution fields. These observations must not enable affiliate CTAs.
