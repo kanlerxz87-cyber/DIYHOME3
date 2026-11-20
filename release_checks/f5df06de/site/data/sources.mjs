@@ -216,6 +216,25 @@ export const sources = [
     ],
   },
   {
+    id: 'S16',
+    official: true,
+    owner: 'Amazon.com Associates Central',
+    title: 'Associates Program Standard Commission Income Statement \u2014 Table 1, Fixed Standard Commission Income Rates for Specific Product Categories',
+    url: 'https://affiliate-program.amazon.com/help/node/topic/GRXPHT8U84RAYDXZ',
+    docDate: 'no revision date stated on the page; footer reads \u00a9 1996-2025 Amazon.com, Inc.',
+    checked: RETRIEVED,
+    access:
+      'Fetched DIRECTLY and successfully on 2026-11-20 (all 3 chunks), signed out, with no Associates credentials. This is the standard OFF-SITE schedule that Program Policies \u00a73 refers to as "described in the Appendix"; it is published as its own help topic rather than inside the Program Policies page, which is why paging through that document did not reach it.',
+    quote:
+      'Table 1 \u2013 Fixed Standard Commission Income Rates for Specific Product Categories: "Physical Books, Kitchen, Automotive | 4.50%" \u00b7 "Toys, Furniture, Home, Home Improvement, Lawn & Garden, Pets Products, Headphones, Beauty, Musical Instruments, Business & Industrial Supplies, Outdoors, Tools, Sports, Baby Products, Amazon Coins | 3.00%" \u00b7 "All Other Categories | 4.00%" \u00b7 "Luxury Beauty, Luxury Stores Beauty, Amazon Explore | 10.00%" \u00b7 "Digital Music, Physical Music, Handmade, Digital Videos | 5.00%" \u00b7 "Amazon Fresh, Physical Video Games & Video Game Consoles, Grocery, Health & Personal Care | 1.00%" \u00b7 "Gift Cards; Wireless Service Plans; Alcoholic Beverages; \u2026 | 0.00%". Preamble: "For Qualifying Purchases of Products within product categories specified in Table 1 below, the Standard Commission Income accrued will be the corresponding fixed rate of Qualifying Revenue specified in this table". Also states a Commission Income Limitation: "Standard Commission Income for all Qualifying Purchases of Products that are categorized as fine art are limited to a maximum of $200 per Product".',
+    relied_on: [
+      'RESOLVES flag F-05. The standard off-site commission rate table exists and is official: Kitchen 4.50%; Home, Home Improvement and Tools each 3.00%; All Other Categories 4.00%.',
+      'Establishes that this is a DIFFERENT schedule from the Onsite Commission Income Statement in S04, which lists Kitchen at 1.25% and Tools at 1.75%. Quoting a rate without naming its schedule is therefore meaningless even when the number is correct.',
+      'Vindicates one third-party figure and refutes two others: amawp.com (S13) claimed Kitchen 4.50% and Tools / Home / Home Improvement 3.00%, which matches this table exactly; earnifyhub.com (S15) claimed Kitchen 5% and Home Improvement 8%, which does not.',
+      'Does NOT by itself fix a rate per product. Amazon assigns the rate by its own product category, which is not necessarily the browse node observed on the listing. For B08FKW9JRM (Tools & Home Improvement) every candidate row is 3.00%, so the rate is determinate; for the two Home & Kitchen products the candidates are Kitchen 4.50% and Home 3.00%, which remain unresolved without Amazon\u2019s category assignment.',
+    ],
+  },
+  {
     id: 'S13',
     official: false,
     owner: 'amawp.com (third party)',

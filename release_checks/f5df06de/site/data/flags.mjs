@@ -83,19 +83,19 @@ export const flags = [
   },
   {
     id: 'F-05',
-    severity: 'high',
+    severity: 'medium',
     status: 'needs-review',
     category: 'Data integrity',
-    title: 'Commission rates could not be verified and third-party sources contradict each other',
+    title: 'Commission rate: the official table is now verified, but the per-product category assignment is not',
     summary:
-      'The commission rate cell is blank for all three products. Three third-party pages retrieved in the same session gave four mutually inconsistent numbers for the same categories.',
+      'CORRECTED 2026-11-20. This flag originally reported the commission rate as unresolvable from official sources. That was wrong: the official standard off-site rate table exists and has now been fetched directly. What remains unresolved is narrower \u2014 which table row Amazon assigns to each specific ASIN.',
     evidence:
-      'Amazon\u2019s own Program Policies state that Standard Commission Income is "described in the Appendix" of that page. The Appendix table for the standard off-site schedule was not reached in this session\u2019s retrieval. Separately, a third-party page (amawp.com) gives Kitchen = 4.50% and Tools = 3.00%; a second (sozee.ai) gives Kitchen = 4.5% off-site but 1.25% onsite and Tools = 3% off-site but 1.75% onsite; a third (earnifyhub.com) gives Kitchen = 5% and Home Improvement = 8%. Amazon\u2019s separate Onsite Commission Income Statement gives yet another schedule again (Table A: Furniture, Home, Home Improvement, Lawn & Garden, Pets = 3.00%; Tools = 1.75%; Kitchen = 1.25%).',
+      'Originally, the Program Policies page states Standard Commission Income is "described in the Appendix", and paging through that document reached the IP License rather than the Appendix, so no official table was captured. Three third-party pages gave conflicting figures and the rate was left blank. The table has since been fetched DIRECTLY from its own help topic: Table 1, Fixed Standard Commission Income Rates for Specific Product Categories, gives "Physical Books, Kitchen, Automotive | 4.50%" and "Toys, Furniture, Home, Home Improvement, Lawn & Garden, Pets Products, Headphones, Beauty, Musical Instruments, Business & Industrial Supplies, Outdoors, Tools, Sports, Baby Products, Amazon Coins | 3.00%" and "All Other Categories | 4.00%". The page states no revision date.',
     impact:
-      'Any commission figure published here would be a guess dressed as data. Worse, two different Amazon schedules exist \u2014 standard off-site and onsite \u2014 so quoting a number without naming the schedule is meaningless even when the number is correct.',
+      'Two consequences. First, the rate cells stay blank, but for a different and much narrower reason than before: Amazon assigns the rate by its own product category, which is not necessarily the browse node rendered on the listing. For B08FKW9JRM the observed department is Tools & Home Improvement, and every candidate row for it (Tools, Home Improvement) is 3.00%, so that rate is effectively determinate. For B0BSKQW2T2 and B08DY9HRWD the observed department is Home & Kitchen, whose candidate rows disagree \u2014 Kitchen 4.50% versus Home 3.00% \u2014 so those two cannot be resolved from the browse node. Second, this flag previously implied the third-party figures were worthless; one of them (amawp.com, Kitchen 4.50% and Tools/Home/Home Improvement 3.00%) matches the official table exactly, while earnifyhub.com (Kitchen 5%, Home Improvement 8%) does not. The rule "leave it blank rather than guess" was still correct, because a third-party match is not a source, but the claim that the rate was unresolvable was not.',
     action:
-      'Read the rate for each product\u2019s browse node from the Appendix of the Program Policies page while signed in to Associates Central, note which schedule it came from, and enter it in the commission dashboard. The calculator there takes the rate as an input and has no default, so nothing renders until a verified number is supplied.',
-    sourceIds: ['S02', 'S04', 'S13', 'S14', 'S15'],
+      'Read the assigned commission category for each ASIN from Associates Central or from an earnings report line, which reflects Amazon\u2019s own categorisation rather than the browse node. Then enter the rate together with the schedule name. Note that the standard off-site schedule (S16) and the onsite schedule (S04) differ materially \u2014 Kitchen is 4.50% off-site but 1.25% onsite \u2014 so a rate quoted without naming its schedule is meaningless even when the number is correct.',
+    sourceIds: ['S16', 'S02', 'S04', 'S13', 'S14', 'S15'],
   },
   {
     id: 'F-06',

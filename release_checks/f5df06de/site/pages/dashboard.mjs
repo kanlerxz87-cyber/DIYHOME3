@@ -506,8 +506,8 @@ export function dashboardSurfaces() {
           callout: {
             kind: 'bad',
             title: 'No rate is published on this surface',
-            text: 'Amazon\u2019s Program Policies state that Standard Commission Income is described in the Appendix of that page. The Appendix table for the standard off-site schedule was not reached during this session\u2019s retrieval, and no rate was confirmed from an Amazon property. Four mutually inconsistent figures were found on third-party pages instead. Under the project\u2019s verification rule, the rate cell stays blank.',
-            sourceIds: ['S02'],
+            text: 'CORRECTED. This surface originally reported that the official rate table could not be reached. It has since been fetched directly from its own help topic: Kitchen is 4.50%, and Home, Home Improvement and Tools are each 3.00%, with All Other Categories at 4.00%. The table is therefore verified. What is NOT verified is which row Amazon assigns to each specific ASIN, because Amazon categorises for commission by its own product category rather than by the browse node rendered on the listing. For B08FKW9JRM every candidate row is 3.00%, so that rate is effectively determinate; for the two Home & Kitchen products the candidates disagree (Kitchen 4.50% against Home 3.00%), so those cells stay blank until the assignment is read from Associates Central or an earnings report.',
+            sourceIds: ['S16', 'S02'],
           },
         },
         { h3: 'Rate status per product' },
@@ -530,14 +530,15 @@ export function dashboardSurfaces() {
           table: {
             head: ['Source', 'Official?', 'Kitchen', 'Home / Home Improvement', 'Tools', 'Retrieved'],
             rows: [
-              ['S02 \u2014 Amazon Program Policies, Appendix (standard off-site)', '<span class="verified">Official</span>', '<span class="unverified">Not reached</span>', '<span class="unverified">Not reached</span>', '<span class="unverified">Not reached</span>', '2026-11-20'],
+              ['S16 \u2014 Amazon Standard Commission Income Statement, Table 1 (standard off-site)', '<span class="verified">Official</span>', '<strong>4.50%</strong>', 'Home / Home Improvement <strong>3.00%</strong>', '<strong>3.00%</strong>', '2026-11-20'],
+              ['S02 \u2014 Amazon Program Policies \u00a73 (points to the Appendix)', '<span class="verified">Official</span>', 'see S16', 'see S16', 'see S16', '2026-11-20'],
               ['S04 \u2014 Amazon Onsite Commission Income Statement, Table A', '<span class="verified">Official</span>', '1.25%', 'Home / Home Improvement 3.00%', '1.75%', '2026-11-20'],
               ['S13 \u2014 amawp.com', '<span class="unverified">Third party</span>', '4.50%', 'Home / Home Improvement 3.00%', '3.00%', '2026-11-20'],
               ['S14 \u2014 sozee.ai (off-site table)', '<span class="unverified">Third party</span>', '4.5%', 'Home 3%', '3%'],
               ['S14 \u2014 sozee.ai (onsite table, same page)', '<span class="unverified">Third party</span>', '1.25%', 'Home & Kitchen 1.25%', '1.75% / 3%'],
               ['S15 \u2014 earnifyhub.com', '<span class="unverified">Third party</span>', '5%', 'Home Improvement 8%', '\u2014', '2026-11-20'],
             ],
-            note: 'S04 is Amazon\u2019s ONSITE schedule, which applies to Amazon-hosted creator content, not to a link on your own website. It is included because quoting it as though it were the off-site rate is one of the most common errors in this space, and because sozee.ai does exactly that on a single page. ' + cites(['S02', 'S04', 'S13', 'S14', 'S15']),
+            note: 'S16 is the authoritative standard OFF-SITE schedule and resolves the conflict. S04 is Amazon\u2019s ONSITE schedule, which applies to Amazon-hosted creator content rather than to a link on your own website; it is included because quoting it as though it were the off-site rate is one of the most common errors in this space, and because sozee.ai does exactly that on a single page. Of the three third-party pages, amawp.com matches S16 exactly and earnifyhub.com does not. ' + cites(['S16', 'S02', 'S04', 'S13', 'S14', 'S15']),
           },
         },
         { h3: 'Calculator \u2014 rate is an input with no default' },
