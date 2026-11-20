@@ -108,3 +108,8 @@
   and `verification/test_check_release.py` — results recorded in PR #5.
 - PR: https://github.com/kanlerxz87-cyber/DIYHOME3/pull/5 (merge + Pages
   deploy confirmation appended after completion).
+### Follow-up publication record — done
+
+- [PR #6](https://github.com/kanlerxz87-cyber/DIYHOME3/pull/6) merged to `main` at `406cbcca2835d1340e642a7702177fbe1e410c3e` on 2026-11-20 at 06:04:58 UTC. Required publication verification passed before the merge.
+- The [GitHub Pages run](https://github.com/kanlerxz87-cyber/DIYHOME3/actions/runs/44685284495) succeeded and the [Pages build record](https://api.github.com/repos/kanlerxz87-cyber/DIYHOME3/pages/builds/1386229284) reports `built` for that exact commit. Independently fetched the updated [front page](https://kanlerxz87-cyber.github.io/DIYHOME3/), [Flagged for Review](https://kanlerxz87-cyber.github.io/DIYHOME3/flagged-for-review/), [RSS](https://kanlerxz87-cyber.github.io/DIYHOME3/feed.xml) and [sitemap](https://kanlerxz87-cyber.github.io/DIYHOME3/sitemap.xml) from the public host.
+- **Needs review, not published as verified:** product intent, enrolled tracking/report attribution, Search Console ownership, and an approved persistent host for commerce and analytics. No production orders, commission forecasts or query rankings were asserted.
