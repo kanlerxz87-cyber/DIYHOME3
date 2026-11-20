@@ -314,3 +314,33 @@ T15: done · T16: done · T17: needs review · T18: needs review
 No force push was used at any point. The rebase onto this session's own remote branch
 used `--rebase=merges`, preserving the integration merge, as session `e10111d6`
 recorded doing.
+
+### Follow-up fix — retired build output renamed so it cannot pollute the integrated checker
+
+Running `verification/check_release.py .` after building this session's retired
+baseline reported **78 HTML pages and 316 findings** instead of 32 and 0. Cause:
+that checker walks the filesystem from the repository root and skips only path parts
+that start with `.` or equal `node_modules` / `verification`. This session's
+`release_checks/f5df06de/build/` held 46 generated pages, so they were audited as
+though published. `release_checks/e10111d6/` never triggered this because it contains
+no HTML.
+
+**CI was never affected** — `build/` was gitignored and not committed, and every
+workflow passed on both merge commits. This was a local-working-tree landmine only:
+anyone who followed the reproduction instructions in this session's README and then
+ran the integrated checker would have seen 316 phantom findings.
+
+**Fix, without editing a file another session owns:** the output directory is renamed
+`.build/`. Because the integrated checker skips any path part beginning with `.`, the
+retired pages are now invisible to it. Verified after the change:
+
+```
+verification/check_release.py .   ->  32 HTML page(s) checked; 0 finding(s)
+```
+
+and the retired baseline still reproduces cleanly from `.build/`:
+46 pages · 223 checks passing · 0 broken links · 27 collector assertions passing.
+
+**Note for future sessions:** any scope that generates HTML under `release_checks/`
+should name its output directory with a leading dot, or the integrated release
+checker will audit it as part of the publication.

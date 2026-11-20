@@ -123,7 +123,7 @@ Reproducible and self-contained. Regenerate with:
 
 ```bash
 cd release_checks/f5df06de
-node tools/build.mjs        # 46 pages into ./build (gitignored)
+node tools/build.mjs        # 46 pages into ./.build (gitignored)
 node tools/verify.mjs       # 223 checks, all passing
 node tools/linkcheck.mjs    # 0 broken links, 0 orphans
 node collector/test.mjs     # 27 assertions, all passing
@@ -139,7 +139,7 @@ independently of `data/products.csv` and `data/sources.csv` and **agree with the
 - `site/data/flags.mjs` — 23 flags with evidence, impact and required action
 - `data/*.json` — machine-readable registers and the empty campaign ledger
 
-**Do not publish `build/`.** It is a second site at colliding paths.
+**Do not publish `.build/`.** It is a second site at colliding paths.
 
 ---
 

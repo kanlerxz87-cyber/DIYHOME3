@@ -35,7 +35,7 @@ import {
 } from '../site/pages/static.mjs';
 import { renderBlocks, breadcrumbs, AMAZON_DISCLOSURE } from '../site/layout.mjs';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'build');
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '.build');
 const BUILD_DATE = '2026-11-20';
 const OUT = [];
 
