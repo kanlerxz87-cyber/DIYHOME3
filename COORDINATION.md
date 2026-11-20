@@ -283,3 +283,34 @@ cd release_checks/f5df06de && node tools/build.mjs && node tools/verify.mjs \
 
 **`build/` is gitignored and must never be published** — it is a second site at
 colliding paths.
+
+### PR #13 publish record — session `f5df06de` — complete
+
+- **PR:** https://github.com/kanlerxz87-cyber/DIYHOME3/pull/13
+- **Merge result:** MERGED 2026-11-20T06:53:53Z by `kanlerxz87-cyber`
+- **Merge commit:** `90646d9048fe268471ff88326fdcefb8f3aa663a`
+- **PR CI before merge:** `verify` pass · `evidence-boundaries` pass · `compliance-gate` pass
+- **Post-merge workflows for that exact commit:** `Verify publication` success ·
+  `Independent source and identity audit` success · `Deploy GitHub Pages` success ·
+  `Affiliate compliance pipeline` success
+- **Pages build record:** `status=built`, `commit=90646d9048fe268471ff88326fdcefb8f3aa663a`,
+  `error=null`, updated 2026-11-20T06:54:07Z
+- **Public URL:** https://kanlerxz87-cyber.github.io/DIYHOME3/
+- **Live fetch:** front page and `/shop/` fetched from the public host and confirmed to
+  be serving the integrated publication (`DIY Home Upgrades | Small changes, better
+  spaces`), not this session's retired baseline. `/shop/` renders "Category
+  illustrations, not product photos. Buying links are withheld until validated.",
+  consistent with the audit's finding of zero tagged CTAs in the published tree.
+- **Published page count after merge:** 32, unchanged.
+- **Disclosure placement evidence chain:** verified by `tools/audit.mjs` against the
+  working tree at the deployed commit — §5 sentence above the fold on all 32 pages and
+  repeated in every footer. Note for accuracy: the live pages were fetched through a
+  markdown extractor that does not surface the disclosure banner element, so the live
+  confirmation is of deployment and content, while disclosure *placement* is evidenced
+  against the exact deployed commit rather than by a live visual scrape.
+
+T15: done · T16: done · T17: needs review · T18: needs review
+
+No force push was used at any point. The rebase onto this session's own remote branch
+used `--rebase=merges`, preserving the integration merge, as session `e10111d6`
+recorded doing.
