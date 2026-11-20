@@ -14,8 +14,9 @@
  *   node tools/linkcheck.mjs   internal link crawl
  */
 
-import { mkdirSync, writeFileSync, cpSync, existsSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { mkdirSync, writeFileSync, cpSync, existsSync, rmSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 import { page, SITE, esc, link } from '../site/layout.mjs';
@@ -35,9 +36,35 @@ import {
 } from '../site/pages/static.mjs';
 import { renderBlocks, breadcrumbs, AMAZON_DISCLOSURE } from '../site/layout.mjs';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '.build');
+/**
+ * Output location for the RETIRED baseline.
+ *
+ * It must never be written inside the repository. Two integrated checkers walk
+ * the tree for HTML and would audit these 46 unpublished pages as though they
+ * were part of the live 32-page publication:
+ *
+ *   verification/check_release.py  skips path parts starting with "." or equal
+ *                                  to node_modules / verification
+ *   scripts/check.py               uses rglob("*.html") and excludes ONLY
+ *                                  "verification" -- so a dot-directory does
+ *                                  not hide anything from it
+ *
+ * Writing to a temp directory outside the repo makes the retired baseline
+ * reproducible while making it structurally impossible for it to pollute either
+ * checker. Override with --out for inspection.
+ */
+function outDir() {
+  const i = process.argv.indexOf('--out');
+  if (i > -1 && process.argv[i + 1]) return resolve(process.argv[i + 1]);
+  return join(tmpdir(), 'diyhome3-retired-baseline');
+}
+
+const ROOT = outDir();
 const BUILD_DATE = '2026-11-20';
 const OUT = [];
+// Start from a clean tree so a stale page can never linger and be mistaken for current output.
+rmSync(ROOT, { recursive: true, force: true });
+mkdirSync(ROOT, { recursive: true });
 
 function write(relPath, content) {
   const abs = join(ROOT, relPath);
@@ -463,7 +490,7 @@ write('.nojekyll', '');
 /*    so its stylesheet, scripts and artwork are copied into build/     */
 /*    from the scope directories they were relocated to.                */
 /* ------------------------------------------------------------------ */
-const SCOPE = join(ROOT, '..');
+const SCOPE = join(dirname(fileURLToPath(import.meta.url)), '..');
 for (const [src, dest] of [
   ['assets-css', 'assets/css'],
   ['assets-js', 'assets/js'],

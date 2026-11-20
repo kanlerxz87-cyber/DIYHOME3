@@ -123,7 +123,7 @@ Reproducible and self-contained. Regenerate with:
 
 ```bash
 cd release_checks/f5df06de
-node tools/build.mjs        # 46 pages into ./.build (gitignored)
+node tools/build.mjs        # 46 pages into $TMPDIR/diyhome3-retired-baseline
 node tools/verify.mjs       # 223 checks, all passing
 node tools/linkcheck.mjs    # 0 broken links, 0 orphans
 node collector/test.mjs     # 27 assertions, all passing
@@ -139,7 +139,42 @@ independently of `data/products.csv` and `data/sources.csv` and **agree with the
 - `site/data/flags.mjs` — 23 flags with evidence, impact and required action
 - `data/*.json` — machine-readable registers and the empty campaign ledger
 
-**Do not publish `.build/`.** It is a second site at colliding paths.
+### Why the output goes to a temp directory, not into the repository
+
+The first version of this scope wrote its 46 pages to `release_checks/f5df06de/build/`,
+gitignored. That was **not sufficient**, and the reason is worth recording because it
+is a trap any future scope could fall into. Two integrated checkers walk the working
+tree for HTML, and they exclude different things:
+
+| Checker | Walk | Excludes |
+| --- | --- | --- |
+| `verification/check_release.py` | filesystem from repo root | path parts starting with `.`, or equal to `node_modules` / `verification` |
+| `scripts/check.py` | `rglob("*.html")` | **only** `verification` |
+
+So renaming the directory to `.build/` hid it from the first checker but not from the
+second, which then failed with `3 != 2` on the disclosure count in a page that is not
+published. CI stayed green throughout, because the directory was gitignored and never
+committed — the breakage was invisible to CI and visible only to someone running the
+suite locally. That is the worst combination: a check that passes in CI while the
+local tree is broken trains people to ignore local failures.
+
+The fix is structural rather than another naming convention: **the retired baseline
+generates nothing inside the repository.** Output goes to
+`$TMPDIR/diyhome3-retired-baseline` (override with `--out`), and `build.mjs` clears
+that directory first so a stale page can never linger. With the baseline built, every
+integrated checker passes:
+
+```
+scripts/check.py                     ->  Ran 2 tests, OK
+verification/check_release.py        ->  32 HTML page(s) checked; 0 finding(s)
+unittest discover -s verification    ->  OK
+unittest discover -s scripts         ->  OK
+unittest discover -s release_checks/e10111d6  ->  OK
+scripts/build.py --check             ->  clean
+```
+
+**Note for future sessions:** do not generate HTML anywhere under the repository in a
+non-published scope. `scripts/check.py` will find it regardless of dot-prefixing.
 
 ---
 

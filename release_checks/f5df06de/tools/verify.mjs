@@ -16,7 +16,8 @@
  */
 
 import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
-import { join, dirname, relative } from 'node:path';
+import { join, dirname, relative, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
 import { products, submissions, TRACKING_ID, asinFormatCheck } from '../site/data/products.mjs';
@@ -26,7 +27,30 @@ import { sources } from '../site/data/sources.mjs';
 import { AMAZON_DISCLOSURE, AMAZON_CONTENT_DISCLAIMER, AMAZON_PRICE_DISCLAIMER, SITE } from '../site/layout.mjs';
 import { EVENTS } from '../site/pages/dashboard.mjs';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '.build');
+/**
+ * Output location for the RETIRED baseline.
+ *
+ * It must never be written inside the repository. Two integrated checkers walk
+ * the tree for HTML and would audit these 46 unpublished pages as though they
+ * were part of the live 32-page publication:
+ *
+ *   verification/check_release.py  skips path parts starting with "." or equal
+ *                                  to node_modules / verification
+ *   scripts/check.py               uses rglob("*.html") and excludes ONLY
+ *                                  "verification" -- so a dot-directory does
+ *                                  not hide anything from it
+ *
+ * Writing to a temp directory outside the repo makes the retired baseline
+ * reproducible while making it structurally impossible for it to pollute either
+ * checker. Override with --out for inspection.
+ */
+function outDir() {
+  const i = process.argv.indexOf('--out');
+  if (i > -1 && process.argv[i + 1]) return resolve(process.argv[i + 1]);
+  return join(tmpdir(), 'diyhome3-retired-baseline');
+}
+
+const ROOT = outDir();
 
 const results = [];
 function check(group, name, ok, detail) {
