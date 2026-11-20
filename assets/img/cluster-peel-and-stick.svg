@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="320" height="200" role="img" aria-labelledby="t1 d1">
+  <title id="t1">Peel-and-stick wall finishing</title>
+  <desc id="d1">An abstract illustration of a film panel being lifted from a wall at one corner, with a smoothing stroke across it. No product is depicted.</desc>
+  <rect width="320" height="200" fill="#efeeea"/>
+  <g stroke="#dcdad4" stroke-width="1"><path d="M0 40H320M0 80H320M0 120H320M0 160H320M40 0V200M80 0V200M120 0V200M160 0V200M200 0V200M240 0V200M280 0V200"/></g>
+  <path d="M46 34 H214 V166 H46 Z" fill="#0f5c4a" opacity="0.18"/>
+  <path d="M46 34 H214 V166 H46 Z" fill="none" stroke="#0f5c4a" stroke-width="3"/>
+  <path d="M214 34 L268 20 L262 78 Z" fill="#b4552d" opacity="0.85"/>
+  <path d="M214 34 L268 20 L262 78 Z" fill="none" stroke="#16181c" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M62 74 H198" stroke="#16181c" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+  <path d="M62 100 H170" stroke="#16181c" stroke-width="6" stroke-linecap="round" opacity="0.35"/>
+  <path d="M62 126 H186" stroke="#16181c" stroke-width="6" stroke-linecap="round" opacity="0.22"/>
+  <circle cx="240" cy="150" r="16" fill="none" stroke="#b4552d" stroke-width="3"/>
+  <circle cx="240" cy="150" r="5" fill="#b4552d"/>
+</svg>

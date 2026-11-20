@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 420" width="560" height="420" role="img" aria-labelledby="ht hd">
+  <title id="ht">Reversible home upgrades</title>
+  <desc id="hd">An abstract editorial illustration: a roofline over a set of modular shelf lines, with fixing points marked as open circles to suggest mounting that can be undone. No product is depicted.</desc>
+
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2f1ec"/>
+      <stop offset="1" stop-color="#e6e4dc"/>
+    </linearGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0 L0 0 0 28" fill="none" stroke="#d9d6cc" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="560" height="420" fill="url(#sky)"/>
+  <rect width="560" height="420" fill="url(#grid)" opacity="0.55"/>
+
+  <!-- roofline -->
+  <path d="M56 176 L280 62 L504 176" fill="none" stroke="#16181c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M56 176 L280 62 L504 176" fill="none" stroke="#b4552d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(0,12)" opacity="0.9"/>
+
+  <!-- shelf structure -->
+  <g stroke="#16181c" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M104 196 V348"/>
+    <path d="M456 196 V348"/>
+  </g>
+  <g stroke="#3d434d" stroke-width="3" stroke-linecap="round" fill="none">
+    <path d="M104 232 H456"/>
+    <path d="M104 276 H456"/>
+    <path d="M104 320 H456"/>
+  </g>
+
+  <!-- reversible fixing points: open circles, never filled -->
+  <g fill="#f7f7f5" stroke="#0f5c4a" stroke-width="3">
+    <circle cx="104" cy="232" r="7"/>
+    <circle cx="456" cy="232" r="7"/>
+    <circle cx="104" cy="276" r="7"/>
+    <circle cx="456" cy="276" r="7"/>
+    <circle cx="104" cy="320" r="7"/>
+    <circle cx="456" cy="320" r="7"/>
+  </g>
+
+  <!-- objects on the shelves: simple masses, no product detail -->
+  <g>
+    <rect x="140" y="200" width="52" height="32" rx="4" fill="#b4552d" opacity="0.85"/>
+    <rect x="204" y="210" width="30" height="22" rx="3" fill="#0f5c4a" opacity="0.7"/>
+    <rect x="352" y="198" width="70" height="34" rx="4" fill="#3d434d" opacity="0.55"/>
+
+    <rect x="146" y="248" width="86" height="28" rx="4" fill="#0f5c4a" opacity="0.55"/>
+    <circle cx="272" cy="262" r="14" fill="#b4552d" opacity="0.75"/>
+    <rect x="330" y="246" width="40" height="30" rx="4" fill="#16181c" opacity="0.35"/>
+    <rect x="382" y="252" width="52" height="24" rx="4" fill="#b4552d" opacity="0.5"/>
+
+    <rect x="150" y="292" width="44" height="28" rx="4" fill="#3d434d" opacity="0.45"/>
+    <rect x="206" y="296" width="64" height="24" rx="4" fill="#0f5c4a" opacity="0.4"/>
+    <rect x="336" y="290" width="94" height="30" rx="4" fill="#b4552d" opacity="0.45"/>
+  </g>
+
+  <!-- baseline -->
+  <path d="M56 348 H504" stroke="#16181c" stroke-width="5" stroke-linecap="round"/>
+
+  <!-- measurement callout: the editorial idea, drawn -->
+  <g stroke="#6b7280" stroke-width="1.6" fill="none">
+    <path d="M486 232 V320" stroke-dasharray="4 4"/>
+    <path d="M480 232 H492"/>
+    <path d="M480 320 H492"/>
+  </g>
+  <text x="498" y="280" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" fill="#6b7280">clear</text>
+  <text x="498" y="294" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12" fill="#6b7280">height</text>
+
+  <text x="56" y="392" font-family="ui-monospace,Menlo,Consolas,monospace" font-size="12.5" fill="#3d434d" letter-spacing="1.6">MEASURE THE SPACE FIRST</text>
+</svg>

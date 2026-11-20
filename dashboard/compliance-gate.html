@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compliance gate · DIYHOME3</title>
+<meta name="description" content="The disclosure and policy checks that run in the build, the ones that need a human, and the current pass state of each.">
+<link rel="canonical" href="https://kanlerxz87-cyber.github.io/DIYHOME3/dashboard/compliance-gate.html">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="generator" content="DIYHOME3 static build 2026-11-20">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DIYHOME3">
+<meta property="og:title" content="Compliance gate · DIYHOME3">
+<meta property="og:description" content="The disclosure and policy checks that run in the build, the ones that need a human, and the current pass state of each.">
+<meta property="og:url" content="https://kanlerxz87-cyber.github.io/DIYHOME3/dashboard/compliance-gate.html">
+<meta name="twitter:card" content="summary">
+<link rel="alternate" type="application/rss+xml" title="DIYHOME3 — guides" href="../feed.xml">
+<link rel="sitemap" type="application/xml" href="../sitemap.xml">
+<link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/css/site.css">
+<script>window.DIYHOME3 = { page: "dashboard/compliance-gate.html", siteBase: "https://kanlerxz87-cyber.github.io/DIYHOME3/", endpoint: null };</script>
+<script src="../assets/js/analytics.js" defer></script>
+<script src="../assets/js/ui.js" defer></script>
+
+
+</head>
+<body class="">
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="../index.html">
+      <svg width="38" height="38" viewBox="0 0 64 64" role="img" aria-label="DIYHOME3 mark" focusable="false">
+  <rect x="1" y="1" width="62" height="62" rx="9" fill="#16181c"/>
+  <path d="M12 33 L32 15 L52 33" fill="none" stroke="#b4552d" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M17 32.5 V49 H47 V32.5" fill="none" stroke="#f7f7f5" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="32" cy="41" r="4.6" fill="#0f5c4a"/>
+  <path d="M32 45.6 V51" stroke="#0f5c4a" stroke-width="3.4" stroke-linecap="round"/>
+</svg>
+      <span class="wordmark-text">
+        <span class="wordmark-name">DIYHOME3</span>
+        <span class="wordmark-tag">Home upgrades, verified before they are recommended</span>
+      </span>
+    </a>
+    <div class="masthead-date">
+      Verification pass 2026-11-20<br/>
+      Tracking ID <span class="mono">shopnow047c-20</span> · <span class="chip chip-warn">unverified</span>
+    </div>
+  </div>
+</header>
+<div class="disclosure" id="disclosure-strip" data-event="disclosure_view">
+  <div class="disclosure-inner">
+    <span class="d-mark">Disclosure</span>
+    <span><strong>As an Amazon Associate I earn from qualifying purchases.</strong> Product links on this site carry a commercial relationship and are marked <code class="inline">rel="sponsored"</code>. Attribution is currently <strong>not active</strong> — see <a href="../compliance/disclosure.html">the full disclosure</a> and <a href="../flagged/index.html">flag F-01</a>.</span>
+  </div>
+</div>
+<nav class="nav" aria-label="Primary">
+  <div class="nav-inner">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
+    <div class="nav-links" id="nav-links">
+      <a href="../index.html">Front page</a>
+      <a href="../products/index.html">Products</a>
+      <a href="../guides/index.html">Guides</a>
+      <a href="../clusters/index.html">Clusters</a>
+      <a href="../reviews/index.html">Compare</a>
+      <a href="../compliance/index.html">Compliance</a>
+      <a href="../flagged/index.html">Flagged</a>
+      <a href="../dashboard/index.html" aria-current="page">Dashboard</a>
+    </div>
+  </div>
+</nav>
+<main id="main" class="wrap">
+
+<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="../index.html">Front page</a></li><li><a href="../dashboard/index.html">Dashboard</a></li><li aria-current="page">Compliance gate</li></ol></nav>
+<div class="pill-nav">
+  <a href="../dashboard/index.html">Overview</a>
+  <a href="../dashboard/product-research.html">Product research</a>
+  <a href="../dashboard/link-intent.html">Link intent</a>
+  <a href="../dashboard/pricing.html">Pricing</a>
+  <a href="../dashboard/reviews.html">Reviews</a>
+  <a href="../dashboard/competition.html">Competition</a>
+  <a href="../dashboard/commission.html">Commission</a>
+  <a href="../dashboard/niche.html">Niche</a>
+  <a href="../dashboard/content-pipeline.html">Content pipeline</a>
+  <a href="../dashboard/link-management.html">Link management</a>
+  <a href="../dashboard/click-tracking.html">Click tracking</a>
+  <a href="../dashboard/conversion-tracking.html">Conversion</a>
+  <a href="../dashboard/campaign-ledger.html">Campaign ledger</a>
+  <a href="../dashboard/compliance-gate.html" aria-current="page">Compliance gate</a>
+  <a href="../dashboard/seo.html">SEO &amp; findability</a>
+  <a href="../dashboard/automation.html">Automation</a>
+</div>
+<h1>Compliance gate</h1><p class="kicker">Dashboard</p>
+<p>The brief asks for disclosures and API policy checks inside the publishing workflow rather than beside it. Everything mechanically checkable is enforced by <code class="inline">tools/verify.mjs</code>, which runs in CI on every push and pull request and fails the build on a violation.</p>
+<h3>Automated checks — enforced in the build</h3>
+<div class="tablewrap"><table class="">
+<thead><tr><th scope="col">Check</th><th scope="col">Requirement source</th><th scope="col">How it is enforced</th><th scope="col">State</th></tr></thead>
+<tbody><tr><td>Operating Agreement §5 sentence present above the fold on every page</td><td>S01 §5, S03</td><td>The sentence is rendered by the page shell, so no page can omit it. verify.mjs asserts it appears in every built HTML file before <main></td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>Same sentence repeated in the footer of every page</td><td>S03 placement standard</td><td>Rendered by footer(); asserted per file by verify.mjs</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>Every outbound product link carries rel="sponsored"</td><td>S12</td><td>outbound() is the only sanctioned emitter; verify.mjs greps built HTML for any amazon.com or link.amazon href lacking sponsored</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>Prices carry a date/time stamp and the §2(i) disclaimer</td><td>S02 IP License §2(i)</td><td>Every price cell renders with the capture timestamp; the verbatim disclaimer is in the footer and on the pricing surface</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>The §2(k) content disclaimer appears site-wide</td><td>S02 IP License §2(k)</td><td>Reproduced verbatim in footer() and asserted per file</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>No Amazon image is embedded or hotlinked</td><td>S02 IP License §2(h)</td><td>verify.mjs fails on any m.media-amazon.com or images-na.ssl-images-amazon.com reference in built output</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>No first-person experience claims in editorial copy</td><td>S10 §255.1(a)</td><td>verify.mjs scans for a fixed phrase list and fails on a match</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>No superlatives or product rankings</td><td>Project rule</td><td>verify.mjs scans for "best ", "#1", "top-rated", "number one"</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>No search-volume or traffic figures in editorial copy</td><td>Project rule</td><td>verify.mjs scans for volume and impression phrasing</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>attributionActive cannot be true without a tag in the href</td><td>S01 §1, S02 §2(g)</td><td>verify.mjs checks the register directly</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>Every guide is present in sitemap.xml and feed.xml</td><td>Project rule</td><td>verify.mjs cross-references the registry against both generated files</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>Every internal link resolves to a built file</td><td>Project rule</td><td>tools/linkcheck.mjs crawls the built output and fails on a 404</td><td><span class="chip chip-ok">Passing</span></td></tr>
+<tr><td>No data cell is filled from a non-official source</td><td>Project rule</td><td>The data layer separates official and third-party sources; only official ids appear in cell()</td><td><span class="chip chip-ok">Passing</span></td></tr></tbody>
+</table></div>
+<h3>Human checks — cannot be automated</h3>
+<div class="tablewrap"><table class="">
+<thead><tr><th scope="col">Check</th><th scope="col">Requirement source</th><th scope="col">Why a machine cannot do it</th><th scope="col">State</th></tr></thead>
+<tbody><tr><td>Tracking ID is active on an approved account</td><td>S01, S03</td><td>Requires an authenticated Associates Central session</td><td><span class="chip chip-bad">Open — F-16</span></td></tr>
+<tr><td>Site URL is registered on the Associates account</td><td>S03</td><td>Requires an authenticated session; Amazon’s guidance requires sites used to drive traffic be kept updated in the account</td><td><span class="chip chip-bad">Open — F-16</span></td></tr>
+<tr><td>Special Link destination and tracking report confirmed</td><td>S01 §1, S02 §2(g)</td><td>Step 5 of the validation gate needs the tracking report</td><td><span class="chip chip-bad">Open — F-15</span></td></tr>
+<tr><td>Commission rate read from the official Appendix</td><td>S02 §3</td><td>The Appendix table was not reached this session and third-party figures conflict</td><td><span class="chip chip-bad">Open — F-05</span></td></tr>
+<tr><td>Disclosure placement reviewed in context, not just for presence</td><td>S01 §5, S03, S10 §255.5</td><td>A script can confirm the sentence exists; only a reader can judge whether it is conspicuous in context on a given layout</td><td><span class="chip chip-warn">Needs review</span></td></tr>
+<tr><td>Endorsement context reviewed against the FTC Guides</td><td>S10, S11</td><td>Judgement about whether copy implies an experience nobody had</td><td><span class="chip chip-warn">Needs review — F-14</span></td></tr>
+<tr><td>Named human author assigned and has actually read the copy</td><td>S10 §255.1(a), §255.3</td><td>Authorship is a fact about a person, not a string in a template</td><td><span class="chip chip-bad">Open — F-14</span></td></tr>
+<tr><td>Observed values re-checked by a human in a normal browser</td><td>S02 IP License §4</td><td>The Agent Terms question in F-08 can only be resolved by a human re-observation</td><td><span class="chip chip-warn">Needs review — F-08</span></td></tr>
+<tr><td>Reader-capture lawful basis and unsubscribe in place</td><td>GDPR / UK GDPR / Swiss FADP; CAN-SPAM</td><td>A legal determination about the owner’s processing, not a code check</td><td><span class="chip chip-bad">Open — F-13</span></td></tr></tbody>
+</table></div>
+<h3>Prohibited practices — never to be automated</h3>
+<ul class="checklist"><li>Bidding on "amazon", "kindle", any Amazon Mark, or a misspelling of one in paid search — a Prohibited Paid Search Placement under §2(c).</li><li>Placing an affiliate link on or generated by a search engine — §2(d).</li><li>Redirecting a reader to Amazon without an affirmative click on this site — §2(e).</li><li>Offering any consideration, reward or incentive for using the links, or asking readers to support a cause by using them.</li><li>Implying that Amazon sponsors, endorses or supports this site, or that there is any affiliation beyond the Associates relationship — §5.</li><li>Making a public communication about the Agreement or about participation in the programme beyond the required disclosure, without advance written permission — §5. Note that this compliance page quotes the Agreement for operational purposes; whether that needs permission is itself a question for the owner.</li><li>Storing or caching Program Advertising Content images, or holding a link to one for more than 24 hours — IP License §2(h).</li><li>Displaying pricing or availability without a date/time stamp and the required disclaimer — IP License §2(i).</li><li>Reverse-engineering, decompiling or deriving model parameters from PA-API or Creators API — IP License §2(g).</li><li>Concealing that access is automated, mimicking human keystroke or navigation patterns, or circumventing a CAPTCHA — IP License §4.</li></ul>
+<div class="callout callout-bad">
+      <div class="callout-title">One self-flag worth reading twice</div>
+      <p class="small">The last item on that list is the one this build has the least certainty about. The research behind this register was performed by an automated agent fetching Amazon pages, and this session cannot confirm that those requests carried the "Agent/[agent name]" user-agent string the Agent Terms require, nor that the agent was operating under an enrolled Associates account. The data is recorded as a good-faith observation with that caveat attached rather than presented as clean.</p>
+      <p class="small"><span class="nowrap"><a class="src" href="https://affiliate-program.amazon.com/help/operating/policies" rel="sponsored nofollow noopener noreferrer" target="_blank" title="Amazon.com Associates Central — Associates Program Policies (Commission Income Statement, Participation Requirements, IP License) (checked 2026-11-20)">S02</a></span></p>
+    </div>
+<hr class="rule"/>
+<p class="tiny muted">
+  Part of the <a href="../dashboard/index.html">operational dashboard</a>.
+  Data on this surface is generated from the same register as the public pages.
+  Anything that could not be confirmed from an official source is shown as a blank, not as an estimate.
+</p>
+
+</main>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <h4>Read</h4>
+        <ul>
+          <li><a href="../index.html">Front page</a></li>
+          <li><a href="../products/index.html">Products</a></li>
+          <li><a href="../guides/index.html">Guides</a></li>
+          <li><a href="../clusters/index.html">Clusters &amp; seasons</a></li>
+          <li><a href="../reviews/index.html">Compare</a></li>
+          <li><a href="../executive-summary.html">Executive summary</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Trust</h4>
+        <ul>
+          <li><a href="../flagged/index.html">Flagged for Review</a></li>
+          <li><a href="../methodology/index.html">Verification method</a></li>
+          <li><a href="../methodology/sources.html">Source register</a></li>
+          <li><a href="../compliance/index.html">Compliance hub</a></li>
+          <li><a href="../compliance/disclosure.html">Disclosure</a></li>
+          <li><a href="../about/index.html">About &amp; authorship</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Dashboard</h4>
+        <ul>
+          <li><a href="../dashboard/index.html">Overview</a></li>
+          <li><a href="../dashboard/product-research.html">Product research</a></li>
+          <li><a href="../dashboard/link-intent.html">Link intent</a></li>
+          <li><a href="../dashboard/pricing.html">Pricing</a></li>
+          <li><a href="../dashboard/reviews.html">Reviews</a></li>
+          <li><a href="../dashboard/competition.html">Competition</a></li>
+          <li><a href="../dashboard/commission.html">Commission</a></li>
+          <li><a href="../dashboard/niche.html">Niche</a></li>
+          <li><a href="../dashboard/content-pipeline.html">Content pipeline</a></li>
+          <li><a href="../dashboard/link-management.html">Link management</a></li>
+          <li><a href="../dashboard/click-tracking.html">Click tracking</a></li>
+          <li><a href="../dashboard/conversion-tracking.html">Conversion</a></li>
+          <li><a href="../dashboard/campaign-ledger.html">Campaign ledger</a></li>
+          <li><a href="../dashboard/compliance-gate.html">Compliance gate</a></li>
+          <li><a href="../dashboard/seo.html">SEO &amp; findability</a></li>
+          <li><a href="../dashboard/automation.html">Automation</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Machine-readable</h4>
+        <ul>
+          <li><a href="../sitemap.xml">sitemap.xml</a></li>
+          <li><a href="../feed.xml">RSS feed</a></li>
+          <li><a href="../robots.txt">robots.txt</a></li>
+          <li><a href="../data/products.json">Product register JSON</a></li>
+          <li><a href="../data/flags.json">Flag register JSON</a></li>
+          <li><a href="../data/campaign-ledger.json">Campaign ledger JSON</a></li>
+          <li><a href="https://github.com/kanlerxz87-cyber/DIYHOME3" rel="noopener noreferrer" target="_blank">Repository</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-disclosure">
+      <p><strong>As an Amazon Associate I earn from qualifying purchases.</strong></p>
+      <p class="small">
+        This site participates in the Amazon Associates programme. Every outbound product-intent link is
+        marked <code class="inline">rel="sponsored"</code>. Affiliate attribution is
+        <strong>not currently active</strong>: no published link carries a tracking tag, because the
+        tagged Special Links have not yet been validated in Associates Central.
+        See <a href="../flagged/index.html">Flagged for Review</a> (F-01, F-15).
+      </p>
+    </div>
+
+    <div class="footer-legal">
+      <p>CERTAIN CONTENT THAT APPEARS ON THIS SITE COMES FROM AMAZON. THIS CONTENT IS PROVIDED ‘AS IS’ AND IS SUBJECT TO CHANGE OR REMOVAL AT ANY TIME.</p>
+      <p>Product prices and availability are accurate as of the date/time indicated and are subject to change. Any price and availability information displayed on amazon.com at the time of purchase will apply to the purchase of this product.</p>
+      <p>
+        Amazon, the Amazon logo, Amazon’s Choice and ASIN are trademarks of Amazon.com, Inc. or its
+        affiliates, used here for identification only. Product names and listing titles are reproduced
+        as observed on amazon.com for the purpose of identification. No Amazon product imagery is
+        displayed on this site — see flag F-09 for the licensing reason.
+      </p>
+      <p>
+        This site sets no cookies, loads no third-party scripts and sends no data to any tracker.
+        Its own analytics are first-party, aggregate and cookieless —
+        see <a href="../compliance/privacy.html">privacy</a>.
+      </p>
+      <p>
+        © 2026 DIYHOME3. Built 2026-11-20.
+        Source and verification history: <a href="https://github.com/kanlerxz87-cyber/DIYHOME3" rel="noopener noreferrer">https://github.com/kanlerxz87-cyber/DIYHOME3</a>.
+      </p>
+    </div>
+  </div>
+</footer>
+</body>
+</html>

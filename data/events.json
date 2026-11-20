@@ -1,0 +1,58 @@
+{
+  "$schema": "diyhome3/analytics-events/v1",
+  "generated": "2026-11-20",
+  "definedIn": "site/pages/dashboard.mjs",
+  "status": "The project brief instructed \"record the five defined events\" without enumerating them. This set is the build’s documented reading of that instruction and is flagged as an assumption at F-21.",
+  "events": [
+    {
+      "name": "page_view",
+      "what": "A page on this origin finished loading.",
+      "why": "Denominator for every other rate. Without it, a click count means nothing."
+    },
+    {
+      "name": "disclosure_view",
+      "what": "The disclosure strip under the masthead entered the viewport.",
+      "why": "Tests the compliance claim rather than assuming it. If this never fires on a page, the disclosure is not actually being seen."
+    },
+    {
+      "name": "outbound_click",
+      "what": "A click on any link leaving this origin.",
+      "why": "The brief’s privacy-preserving outbound-click counter. Captures where attention actually leaves."
+    },
+    {
+      "name": "affiliate_click",
+      "what": "An outbound click whose destination host is amazon.com, www.amazon.com or link.amazon.",
+      "why": "Separates product intent from citation clicks. A click on a source link is not a commercial signal and must not be counted as one."
+    },
+    {
+      "name": "reader_capture",
+      "what": "A submission of the reader-capture form to a configured endpoint.",
+      "why": "SG-30. Only fires when an endpoint exists, so it can never over-report a capture that was silently dropped."
+    }
+  ],
+  "privacy": {
+    "cookiesSet": 0,
+    "thirdPartyScripts": 0,
+    "personalDataFields": [],
+    "neverRecorded": [
+      "IP address",
+      "user agent",
+      "cookie or persistent identifier",
+      "referrer",
+      "full destination URL of an outbound click",
+      "scroll depth, dwell time or reading position",
+      "anything cross-site"
+    ],
+    "storage": "Five integers under one localStorage key on this origin. Aggregate counts only."
+  },
+  "collector": {
+    "implementation": "analytics/server/index.mjs",
+    "routes": [
+      "POST /collect",
+      "GET /stats",
+      "GET /healthz"
+    ],
+    "deployed": false,
+    "reasonNotDeployed": "GitHub Pages serves static files and executes nothing server-side. See flag F-11."
+  }
+}
