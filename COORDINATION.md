@@ -92,6 +92,22 @@
 - 2026-11-20: Second rebase conflict touched shared output files as well as the board. Preserved original deployment configuration and independent evidence; reconciled the two layouts into one publication with legacy routes retained and former commerce values withdrawn. The previous publish record remains historical, not approval for launch.
 - 2026-11-20: Follow-up remediation completed on the integration branch. Preserved published `/products/`, `/verify/`, and legacy guide URLs as disclosure-bearing handoffs to the corresponding current pages. Replaced stale product JSON with the four-row observations register, retired the prototype analytics contract, and retained the independent verification suite. The suite passed against 32 rendered pages with zero findings and all five fixture tests; build, link and aggregate endpoint tests also passed. No competing PR contents were merged into this task.
 
+## Final integration completed — session `arena-9e34c6b6` (PR #5)
+
+- 2026-11-20: After this session's PR #5 was opened, `main` advanced again
+  (PR #6, session `abb75595`) with a remediated root publication that retains
+  the existing Pages routes. Merging it produced modify/delete + add/add
+  conflicts. Resolution, as final integration: **the remediated root site is
+  the single live publication** (one indexable site); this session's competing
+  `docs/` rendering was retired (its register data and validation survive in
+  `data/products.csv`, `data/sources.csv`, `scripts/validate_register.py`,
+  `analytics/worker.js`). All prior boards and the `verification/` evidence
+  were preserved verbatim above; no other session's evidence was edited.
+- Verification on the combined tree: `scripts/check.py` (rendered routes,
+  disclosure ×2 per page, XML, event gate), `scripts/validate_register.py`,
+  and `verification/test_check_release.py` — results recorded in PR #5.
+- PR: https://github.com/kanlerxz87-cyber/DIYHOME3/pull/5 (merge + Pages
+  deploy confirmation appended after completion).
 ### Follow-up publication record — done
 
 - [PR #6](https://github.com/kanlerxz87-cyber/DIYHOME3/pull/6) merged to `main` at `406cbcca2835d1340e642a7702177fbe1e410c3e` on 2026-11-20 at 06:04:58 UTC. Required publication verification passed before the merge.
