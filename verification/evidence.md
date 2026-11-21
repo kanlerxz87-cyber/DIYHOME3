@@ -27,3 +27,41 @@ The three observed listings are not air fryers. Air-fryer titles can be explored
 - **Verified observation**: dated public evidence supports this limited fact.
 - **Unverified**: leave the value empty; do not substitute observed data for intent or a null metric for a measured zero.
 - **Release gate**: must pass before turning on the affected CTA, ingestion, or data claim. Unverified items need not prevent the editorial site from going live.
+
+---
+
+## 2026-11-21 — session `f23eebec`: independent live re-read (append only; no prior evidence edited)
+
+Each line was fetched from the official host on 2026-11-21 and the quoted wording was
+read in the response body. This is an independent read by a different session; it did not
+consult any other session's report before recording the results.
+
+| # | URL | Read today | Result |
+|---|---|---|---|
+| 1 | https://affiliate-program.amazon.com/help/operating/agreement | Section 5, verbatim: "As an Amazon Associate I earn from qualifying purchases." Header: "**Updated:** October 15, 2025". Section 1: Special Links must "properly use the special 'tagged' link formats we provide". | Matches site |
+| 2 | https://affiliate-program.amazon.com/help/node/topic/GHQNZAU6669EZS98 | Link-level disclosure must be "Clear" and "Conspicuous", "placed near any affiliate link or product review"; the same required sentence is restated. | Matches site |
+| 3 | https://www.amazon.com/b?ie=UTF8&node=51812349011 | GLOSSARY: "Every item in our catalog has a unique 10-digit ASIN." | Confirms the 9-character finding |
+| 4 | https://affiliate-program.amazon.com/help/operating/policies | Header "**Updated:** April 14, 2026". §2(t) reviews/ratings only via Creators API or PA API; §2(y) no price tracking/alerting; §2(u) no self-purchase through Special Links; IP License §2(h) 24-hour image-link window; §2(i) price timestamp + disclaimer; §4 Agent Terms require `Agent/[agent name]`. | New: §2(t)/§2(y)/§2(h)/§2(i) recorded as F-22 source |
+| 5 | https://affiliate-program.amazon.com/help/node/topic/GRXPHT8U84RAYDXZ | Table 1: "Physical Books, Kitchen, Automotive | 4.50%"; "…Home, Home Improvement … Tools… | 3.00%"; "All Other Categories | 4.00%". | Matches site |
+| 6 | https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits | "GitHub Pages is not intended for or allowed to be used as a free web-hosting service to run your online business, e-commerce site, or any other website that is primarily directed at either facilitating commercial transactions…" | Matches site |
+| 7 | https://www.ftc.gov/business-guidance/resources/ftcs-endorsement-guides-what-people-are-asking | "an act or practice is deceptive if it misleads 'a significant minority' of consumers. That's why disclosure is important." | Matches site |
+| 8 | https://www.amazon.com/dp/B08FKW9JRM | Title/ASIN match; breadcrumb "Tools & Home Improvement › Paint, Wall Treatments & Supplies › Wallpaper & Wallpapering Supplies › Wallpaper Tools". Price shown $5.08 — **not published**. | Observed only |
+| 9 | https://www.amazon.com/dp/B0BSKQW2T2 | Title/ASIN match; breadcrumb "Home & Kitchen › … › Racks & Holders › Paper Towel Holders". Price shown $6.79 — **not published**. | Observed only |
+| 10 | https://www.amazon.com/dp/B08DY9HRWD | Title/ASIN match; breadcrumb "Home & Kitchen › … › Racks & Holders › Pot Racks". Price shown $17.74 — **not published**. | Observed only |
+
+### New finding — F-22
+
+**Agent identification.** IP License §4 requires an autonomous agent that touches Program
+Content to send `Agent/[agent name]` in its user-agent string and not to conceal that its
+access is automated. This session read the three listing pages through automated tooling;
+whether that tool set such a token is not observable from inside the sandbox. The listing
+values are therefore presentational observations, to be re-checked by a human in a normal
+browser before use in promotional copy. Non-blocking: the published site shows only an
+ASIN and a breadcrumb path from those pages, and no price, rating or image.
+
+### Still unverified after this pass (unchanged, still blank on the site)
+
+- Intended ASIN per submission — the brief names none; a redirect records behaviour, not intent.
+- Special Link destination and report attribution for `shopnow047c-20` — needs the enrolled Associates session.
+- Search Console ownership, impressions and clicks — no verified property.
+- Production analytics totals — the collector is not deployed on the Pages host.
