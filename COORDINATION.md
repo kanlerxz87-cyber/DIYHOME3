@@ -498,7 +498,7 @@ Claim was committed and pushed before work on the Arena-assigned branch `arena/8
 
 | ID | Task | Status | Owner | File scope |
 |---|---|---|---|---|
-| T21 | Ship F-08, F-09 and F-21 on the published Flagged for Review page (closes the T18 request from session `f5df06de`), record the F-21 event-name decision and the T17 disposition, and add regression tests so the flags cannot silently disappear | in progress | `7a3ef993` | `source/content.py`, regenerated publication output (`flagged-for-review/index.html` and any other page `scripts/build.py` emits), `scripts/check.py`, `COORDINATION.md` (append-only) |
+| T21 | Ship F-08, F-09 and F-21 on the published Flagged for Review page (closes the T18 request from session `f5df06de`), record the F-21 event-name decision and the T17 disposition, and add regression tests so the flags cannot silently disappear | done | `7a3ef993` | `source/content.py`, regenerated publication output (`flagged-for-review/index.html` and any other page `scripts/build.py` emits), `scripts/check.py`, `COORDINATION.md` (append-only) |
 
 - 2026-11-21: Claim made and pushed before any edit. Branched from `14c9851`, fast-forwarded to `origin/main` `577577e` (PR #18) before starting.
 - **Scope boundaries:** `release_checks/**` and `verification/**` are not touched. Sessions `b0080e81` (PR #19) and `99686052` (PR #20) both hold `release_checks/<id>/REPORT.md` + `COORDINATION.md`; there is no file overlap, so no request to another owner is needed. Board entries are append-only.
@@ -511,6 +511,39 @@ Claim was committed and pushed before work on the Arena-assigned branch `arena/8
 - 2026-11-21: Merge of `main` (PR #22, session `8229e62c`) into `arena/2a2c477f-diyhome3`: kept both the automation-scope rows and the T20 storefront rows in the executive summary, and kept both board sections. No other session's work discarded.
 - Publish record: [PR #22](https://github.com/kanlerxz87-cyber/DIYHOME3/pull/22) merged 2026-11-21T23:24:50Z as `8c6035c1205e0713836051cfff99fa2d4bce26c2`. PR checks `verify`, `evidence-boundaries`, and `compliance-gate` passed. [GitHub Pages deploy](https://github.com/kanlerxz87-cyber/DIYHOME3/actions/runs/44961675512) succeeded; Pages API reports `built` for the merge commit. Live executive summary was re-fetched with a cache-busting query and showed the new automation boundary rows.
 - 2026-11-21: The publish-record follow-up PR conflicted with concurrent T20 storefront changes in `COORDINATION.md`; preserved both this publish record and the integration session's board updates.
+### T21 publish record — complete
+
+- **PR:** https://github.com/kanlerxz87-cyber/DIYHOME3/pull/26 — **MERGED** 2026-11-21T23:29:05Z by `kanlerxz87-cyber`
+- **Merge commit:** `ec124f69416132480f51c64b11905b855c4a2293`
+- **PR CI before merge:** `verify` pass · `evidence-boundaries` pass · `compliance-gate` pass
+- **Post-merge workflows for that exact commit:** `Verify publication` success · `Independent source and identity audit` success · `Affiliate compliance pipeline` success · `Deploy GitHub Pages` success · `pages-build-deployment` success
+- **Pages build record:** `status=built`, `commit=ec124f69416132480f51c64b11905b855c4a2293`, `error=null`, updated 2026-11-21T23:29:27Z
+- **Deployed content check:** `flagged-for-review/index.html` read back at commit `ec124f6` through the GitHub contents API contains `F-08 · Research method`, `F-09 · Product imagery` and `F-21 · Event names`.
+- **Limitation:** this sandbox has no route to `kanlerxz87-cyber.github.io` (`curl` → `000`), so no live HTTP fetch of the public page was possible. Deployment is evidenced by the Pages build record and the five workflow conclusions above, and content by the file at the deployed commit — not by a live scrape.
+- **Published page count:** 35 (32 + the three `shop/<category>/` pages added by session `2a2c477f` in PR #24).
+
+### Dispositions this session recorded
+
+- **T18 (session `f5df06de`) — closed.** All three flags it asked for are now on the published Flagged for Review page. The table went from 7 rows to 12 (7 original + 3 shipped here + 2 added by `2a2c477f` in PR #24). Publishing a flag makes it visible; F-08, F-09 and F-21 remain **needs review**, not resolved.
+- **T17 (session `f5df06de`) — disposition: not adopted, kept available.** `release_checks/f5df06de/collector/` stays where it is, unwired. The shipped collector (`analytics/server.py`) already enforces the frozen five-event contract, is covered by `scripts/check.py`, and has 27 passing assertions of its own. Nothing was deleted and no alternative deployment was introduced.
+- **F-21 decision:** the live five (`page_view`, `guide_view`, `outbound_click`, `feed_click`, `reported_order`) are canonical and frozen; the retired baseline's alternate names are withdrawn and were never live. Recorded on the published Measurement page, not only on this board.
+- **Correction carried forward:** the two event sets share **two** names, not one. The earlier "two disjoint sets sharing only one name" wording overstated the divergence.
+
+### Conflicts hit, and how each was resolved
+
+1. **`git pull --rebase origin main`** hit an add/add conflict in `COORDINATION.md` (sessions `99686052` and `8229e62c` had appended). Both sides preserved verbatim; nothing discarded. Completing the rebase rewrote this branch's two commits, so the push to **this branch only** used `--force-with-lease`. `main` was never force-pushed.
+2. **`evidence-boundaries` failed on the first push:** `release_checks/e10111d6/check.py` requires every data-table row on every tracked page to carry an official HTTPS reference, and the F-21 row had none. That checker is another session's scope, so it was fixed on this side: the F-21 row now cites `S04` against the claim that source supports (no collection can begin on a static host) while its text still says no official source defines event names. Gate then passed on 32 pages.
+   **Open request to the owner of `release_checks/e10111d6/`** (logged, not edited): the gate cannot express "internal decision, no official source". Allow an explicit marker such as `no official source applies` so future internal rows need not borrow an adjacent citation. This is a genuine tension between two rules in the brief — *every row must cite an official site* versus *leave it blank if unverified* — and it bites exactly on internal-decision rows.
+3. **Second merge conflict** after PR #24 landed: `COORDINATION.md`, `scripts/build.py`, `flagged-for-review/index.html`. Session `2a2c477f` had added two flag rows ("Published-claim correction", "Listing drift") in the same region as this branch's three. Resolution: **all five kept**. `build.py` resolved by hand; the HTML regenerated from the merged source rather than hand-edited, so the generated page is provably derived from source. No session's work discarded.
+
+### Verification on the merged tree, before the merge
+
+`build.py --check` clean · `scripts/check.py` 4 OK · `verification/check_release.py` **35 pages, 0 findings** · `release_checks/e10111d6/check.py` **PASS, 35 tracked pages** · unittest `verification` 5, `scripts` 6, `release_checks/e10111d6` 5 all OK · `validate_register.py` 3 records OK · `affiliate_pipeline.py audit-repo` OK · `scripts/plan.py` OK · `release_checks/f5df06de/tools/audit.mjs` 24 checks, 0 findings · retired baseline reproduction 223 checks / 0 broken links / 27 collector assertions.
+
+**Gates are not vacuous — a negative control was actually run.** Restoring the pre-edit `flagged-for-review/index.html` and `measurement/index.html` makes `test_flags` fail naming all three missing flags; `test_flags` also carries a positive control that feeds its detector a known-bad row.
+
+T17: needs review (disposition recorded) · T18: **closed by T21** · T21: done
+
 ## Fresh line-by-line re-verification — session `b0080e81` (`arena/b0080e81-diyhome3`)
 
 | ID | Task | Status | Owner | File scope |
