@@ -585,4 +585,5 @@ T17: needs review (disposition recorded) · T18: **closed by T21** · T21: done
 
 ### Publish record — session `320a4dc7`
 
-- PR: https://github.com/kanlerxz87-cyber/DIYHOME3/pull/29 (opened 2026-11-21; merge result appended after completion).
+- PR: https://github.com/kanlerxz87-cyber/DIYHOME3/pull/29 — **MERGED** 2026-11-21T23:32:34Z, merge commit `d637a5aae47b2fc2388c35343c71d8cf2de1663c`. PR checks `verify`, `evidence-boundaries`, `compliance-gate` passed before the merge.
+- Post-merge: [Verify publication](https://github.com/kanlerxz87-cyber/DIYHOME3/actions/runs/44962304202) success; [Deploy GitHub Pages](https://github.com/kanlerxz87-cyber/DIYHOME3/actions/runs/44962304190) success. Pages API reports `status=built`, `error=null` for commit `d637a5aae47b2fc2388c35343c71d8cf2de1663c` (updated 2026-11-21T23:32:50Z). Live front page and the corrected `guides/air-fryer-capacity/` page were fetched from the public host and confirmed.
