@@ -59,15 +59,19 @@ use.
 
 No cited official source was unreachable.
 
-## 3. Correction made
+## 3. Dimension claim — independent concurrence with a concurrent correction
 
-`guides/air-fryer-capacity/` previously said Instant Pot “lists basket
-dimensions separately from volume”. The cited Vortex 6QT page lists the
-6-quart volume and the **unit’s overall dimensions** (Wide 12.36 × Height
-12.83 × Length 14.92), not basket dimensions. The sentence was corrected to
-“lists the 6-quart volume separately from the unit’s overall dimensions” in
-`source/content.py`, and the guide page was regenerated. No other guide claim
-was contradicted by its cited source.
+`guides/air-fryer-capacity/` said Instant Pot “lists basket dimensions
+separately from volume”. The cited Vortex 6QT page lists the 6-quart volume
+and the **unit’s overall dimensions** (Wide 12.36 × Height 12.83 × Length
+14.92 in), not basket dimensions. This session’s branch (based on `8c6035c`)
+corrected the sentence; on rebase onto `main` (`ec124f6`) the same correction
+was already present from session `2a2c477f` (T20, commit `d8c8fd7`), with
+wording that matches this session’s independent finding: “Instant Pot
+publishes a 6-quart volume alongside overall dimensions … those are the
+dimensions of the appliance, not a substitute for the usable basket area.”
+This session kept that wording; no additional edit was needed. No other guide
+claim was contradicted by its cited source.
 
 ## 4. Local gates (run 2026-11-21 on `arena/320a4dc7-diyhome3`)
 
@@ -99,6 +103,8 @@ was contradicted by its cited source.
 ## 7. Verdict
 
 The release is live, internally consistent and consistent with the official
-sources rechecked here. One editorial sentence was corrected for accuracy; no
-product record, intent field or commercial control changed. This report, the
-guide correction and the `COORDINATION.md` append are this session’s changes.
+sources rechecked here. One editorial sentence was independently re-verified
+and was already corrected on `main` by a concurrent session; this session
+concurred and kept that wording. No product record, intent field or commercial
+control changed. This report and the `COORDINATION.md` append are this
+session’s changes.
