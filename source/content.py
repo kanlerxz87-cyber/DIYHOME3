@@ -21,6 +21,9 @@ SOURCES = {
     'S15': ('Amazon · Standard Commission Income Rates', 'https://affiliate-program.amazon.com/help/node/topic/GRXPHT8U84RAYDXZ'),
     'S16': ('Amazon · Creators API documentation', 'https://affiliate-program.amazon.com/creatorsapi/docs/en-us/introduction'),
     'S24': ('Amazon · Associate and link-level disclosures', 'https://affiliate-program.amazon.com/help/node/topic/GHQNZAU6669EZS98'),
+    'S17': ('Amazon · Participation Requirements §2(t) and §2(y)', 'https://affiliate-program.amazon.com/help/operating/policies'),
+    'S18': ('Amazon · IP License §2(h) and §2(i)', 'https://affiliate-program.amazon.com/help/operating/policies'),
+    'S19': ('Amazon · Associates glossary: ASIN', 'https://www.amazon.com/b?ie=UTF8&node=51812349011'),
 }
 # Preserve all four submissions even though the middle URL appears twice.
 PRODUCTS = [
@@ -34,6 +37,52 @@ SUBMISSIONS = [
          observed_on=DATE, rechecked_on=RECHECK, observation_source=PRODUCTS[idx]['source'], duplicate_of=2 if i == 3 else None,
          intended_asin=None, official_listing_url=None, confirmed_on=None, confirmation_source=None)
     for i, idx in enumerate((0, 1, 1, 2), 1)
+]
+VERIFIED_ON = '2026-11-21'
+# Dated record: claim -> official source -> result. Every row was fetched and read on
+# the date shown. Nothing here is inferred from a third party or from the product brief.
+RECORD = [
+    dict(claim='Required Associates statement, exact wording', source='S01',
+         result='Section 5 states the sentence verbatim; the page header reads "Updated: October 15, 2025".',
+         publish='Shown under the masthead and repeated in the footer of every page.'),
+    dict(claim='Link-level disclosure sits next to the paid link', source='S24',
+         result='The help page requires a disclosure that is clear, conspicuous and placed near the affiliate link or product review.',
+         publish='No paid link is live, so there is nothing to label yet. Any released link carries adjacent "(paid link)" text.'),
+    dict(claim='An ASIN is a 10-character identifier', source='S19',
+         result='The Associates glossary states every catalogue item has a unique 10-digit ASIN.',
+         publish='All three submitted tokens are 9 characters, so none is recorded as an ASIN.'),
+    dict(claim='Special Links must use the assigned tagged format', source='S03',
+         result='Links must properly use the tagged formats Amazon provides and must not obscure that the reader is going to Amazon.',
+         publish='No tagged link is published until one link per product is tested in the enrolled workflow.'),
+    dict(claim='Customer reviews and star ratings need API access', source='S17',
+         result='Participation Requirements §2(t) allows them only via Creators API or PA API. §2(y) separately bars price tracking and price alerting.',
+         publish='No rating, review count, price history or price alert appears anywhere on this site.'),
+    dict(claim='Product images and prices have a 24-hour freshness limit', source='S18',
+         result='IP License §2(h) allows storing a link to an image for at most 24 hours; §2(i) requires a timestamp and a fixed disclaimer beside any price.',
+         publish='The site publishes no Amazon product image and no price, so neither rule is triggered. Every image here is an illustration.'),
+    dict(claim='GitHub Pages is not for primarily commercial sites', source='S04',
+         result='Pages may not be used to run an online business, e-commerce site, or a site primarily directed at facilitating commercial transactions.',
+         publish='The Pages release stays editorial. Commerce moves to an approved host before any paid link goes live.'),
+    dict(claim='Commission relationships must be disclosed clearly', source='S07',
+         result='The Endorsement Guides FAQ says a practice is deceptive if it misleads "a significant minority" of consumers, which is why the relationship is disclosed.',
+         publish='Disclosure sits above the fold on every page and repeats in the footer.'),
+    dict(claim='Fixed standard commission rates by category', source='S15',
+         result='Table 1: Kitchen 4.50%; Home, Home Improvement and Tools 3.00%; all other categories 4.00%.',
+         publish='Rates are quoted only with their category and schedule. No per-product rate is claimed.'),
+    dict(claim='Observed listings and their category paths', source='S12',
+         result='All three listings were re-read on 2026-11-21 and matched the 2026-11-20 titles and breadcrumbs.',
+         publish='Observed values only. Intent stays blank until the owner names the product they meant to send.'),
+    dict(claim='One site to index: canonical host, sitemap, feed', source='S06',
+         result='A sitemap plus one canonical URL per page is the documented discovery path.',
+         publish='One canonical host, one sitemap, one RSS feed. Desk pages are noindex so only the shop and guides are indexed.'),
+]
+BLANKS = [
+    dict(item='Intended ASIN for each submitted link', why='The brief names no ASIN. An observed redirect records what a link did, not what the sender meant.', source='S19'),
+    dict(item='A Special Link URL for the requested tag', why='The tag has not been shown to attribute in an Associates report, and the site cannot open the enrolled session.', source='S03'),
+    dict(item='Per-product commission rate', why='Amazon assigns commission by its own product category; the public listing does not state it.', source='S15'),
+    dict(item='Price, rating and review count', why='Publishing them without API access would breach §2(t), and a static page cannot meet the 24-hour refresh rule.', source='S17'),
+    dict(item='Search Console impressions and clicks', why='No verified property exists, and none can be created with repository access alone.', source='S06'),
+    dict(item='Production analytics totals', why='The collector is not deployed on the Pages host, so it has recorded nothing.', source='S04'),
 ]
 # Category pages group the shortlist the way a reader shops: by the job, not by the audit.
 # Each `check` item is either quoted from the cited official page or clearly framed as a

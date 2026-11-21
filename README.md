@@ -1,10 +1,23 @@
 # DIY Home Upgrades
 
-[Editorial site](https://kanlerxz87-cyber.github.io/DIYHOME3/) · [Executive summary](https://kanlerxz87-cyber.github.io/DIYHOME3/executive-summary/) · [Flagged for Review](https://kanlerxz87-cyber.github.io/DIYHOME3/flagged-for-review/) · [RSS](https://kanlerxz87-cyber.github.io/DIYHOME3/feed.xml)
+[Editorial site](https://kanlerxz87-cyber.github.io/DIYHOME3/) · [Verification log](https://kanlerxz87-cyber.github.io/DIYHOME3/verified/) · [Executive summary](https://kanlerxz87-cyber.github.io/DIYHOME3/executive-summary/) · [Flagged for Review](https://kanlerxz87-cyber.github.io/DIYHOME3/flagged-for-review/) · [RSS](https://kanlerxz87-cyber.github.io/DIYHOME3/feed.xml)
 
 The public release is a static editorial publication with a browsable shop, not a live affiliate storefront. GitHub Pages prohibits sites primarily directed at facilitating commercial transactions; see [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits). Shop pages are organised by category (`/shop/walls-finishes/`, `/shop/kitchen-organization/`, `/shop/storage-shelving/`); each lists the item, its observed ASIN, the date that observation was rechecked, what to compare, and the buying-link status. The three category images and kitchen photo are AI-generated illustrations, not product photography. No paid product links, commercial forecasts, prices, ratings, reviews or demand rankings are published. No private account, tracking, or indexing status is inferred from public pages. The three observed listings were re-fetched on 2026-11-21 and still resolve to the same ASINs; prices and stock are still not republished.
 
 `EXECUTIVE_SUMMARY.md` is the owner-facing summary: decision, the four submitted links, what was verified against which official page, and the open items.
+
+## The verification log
+
+`/verified/` renders the dated `RECORD` and `BLANKS` tables from `source/content.py`:
+eleven claims, the official source for each, the date it was last read, and six cells that
+are blank on purpose with the reason stated beside them. It exists so a reader can tell a
+confirmed claim from a claim that was never made. If you change a claim on the site, change
+its row here in the same commit — a stale verification date is worse than none.
+
+**Do not add a price, star rating, review count or Amazon product image to any page.**
+Participation Requirements §2(t) limits reviews and ratings to Creators API or PA API, IP
+License §2(h) allows storing a link to an image for at most 24 hours, and §2(i) requires a
+timestamp and disclaimer beside any price. Those readings are rows 5 and 6 of `RECORD`.
 
 ## Build and verification
 

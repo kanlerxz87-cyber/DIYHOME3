@@ -12,11 +12,11 @@ from urllib.parse import urlsplit, parse_qs
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'source'))
-from content import DATE, RECHECK, TRACKING_ID, DISCLOSURE, SOURCES, PRODUCTS, SUBMISSIONS, SPECIAL_LINKS, GUIDES, CATEGORIES
+from content import DATE, RECHECK, TRACKING_ID, DISCLOSURE, SOURCES, PRODUCTS, SUBMISSIONS, SPECIAL_LINKS, GUIDES, CATEGORIES, RECORD, BLANKS, VERIFIED_ON
 
 PAGES_URL = 'https://kanlerxz87-cyber.github.io/DIYHOME3/'
 BRAND = 'DIY Home Upgrades'
-DESK = {'executive-summary/': 'Executive summary', 'product-register/': 'Product register', 'flagged-for-review/': 'Flagged for Review', 'measurement/': 'Measurement', 'sources/': 'Source library'}
+DESK = {'verified/': 'Verification log', 'executive-summary/': 'Executive summary', 'product-register/': 'Product register', 'flagged-for-review/': 'Flagged for Review', 'measurement/': 'Measurement', 'sources/': 'Source library'}
 SHOP = {'': 'Home', 'shop/': 'Shop', 'guides/': 'Guides'}
 GUIDE = {g['slug']: g for g in GUIDES}
 LEGACY = {
@@ -47,6 +47,7 @@ def validate(profile):
     assert len(product_ids) == len(PRODUCTS) and len(GUIDE) == len(GUIDES)
     assert all(x['product'] in product_ids and x['observation_source'] in SOURCES and x['observed_redirect_target'] == SOURCES[x['observation_source']][1] for x in SUBMISSIONS)
     assert all(s in SOURCES for g in GUIDES for _, _, s in g['sections'])
+    assert all(row['source'] in SOURCES for row in RECORD + BLANKS)
     assert len({c['slug'] for c in CATEGORIES}) == len(CATEGORIES) == len(PRODUCTS)
     assert all(c['product'] in product_ids and c['guide'] in GUIDE for c in CATEGORIES)
     assert all(s in SOURCES for c in CATEGORIES for _, _, s in c['check'])
@@ -201,6 +202,14 @@ def desk_page(path, title, lead, body):
 
 
 def desk_pages():
+    route('verified/', 'Verification log', 'Each claim this site makes, the official source it was checked against, the date it was last read, and what was deliberately left blank.',
+        '<div class="wrap">'+head('Checked in public','Verification log',f'Every row below was read on {VERIFIED_ON} at the official source named beside it. Where a value could not be confirmed, the cell is blank and the row says why.')+
+        '<p class="notice">This is not a ranking, and it is not an audit report. It is the working record, so a reader can tell a confirmed claim from a claim that was never made.</p>'+
+        table(('Claim','Official source','Last read','What the source says','How this site applies it'),
+              [(e(r['claim']), src(r['source']), VERIFIED_ON, e(r['result']), e(r['publish'])) for r in RECORD])+
+        '<h2>Left blank on purpose</h2><p>Six things a buyer might look for are absent. Each is absent for a stated reason rather than an oversight.</p>'+
+        table(('Not published','Why it is blank','Official source'),[(e(b['item']), e(b['why']), src(b['source'])) for b in BLANKS])+
+        '<div class="prose"><h2>What this page cannot tell you</h2><p>Reading a policy establishes what the policy says. It does not establish that this account is enrolled, that a tracking ID attributes, or that a listing has not changed since the date above. Those are account-level facts that reading a public page cannot confirm, so they sit on <a href="../flagged-for-review/">Flagged for Review</a> rather than being implied here.</p></div></div>', hidden=True)
     desk_page('executive-summary','Executive summary','Launch decision: publish the editorial project; hold the affiliate rollout until the evidence and hosting are in place.', table(('Area','Finding','Official source'),[
         ('Catalog','Four submissions, three unique links. The observations are wallpaper tools, a towel holder and a cookware rack; none confirms intended product identity. All three were re-fetched on 2026-11-21 and still resolve to the same ASINs.', ' · '.join(src(s) for s in ('S12','S13','S14'))),
         ('Affiliate release',f'Requested tracking ID: <code>{TRACKING_ID}</code>. Enrollment, tracking attribution and compliance of the supplied short links are unverified. No paid links are live.',src('S01')+' · '+src('S02')),
@@ -238,6 +247,7 @@ def desk_pages():
         ('F-21 · Event names','The brief asked for “the five defined events” without naming them. Two sessions reading that instruction produced different sets that share only two names (<code>page_view</code>, <code>outbound_click</code>). <strong>Decision:</strong> the five names on the measurement page are canonical, because they are the set implemented in <code>analytics/server.py</code>, enumerated in <code>analytics/targets.json</code> and enforced by the continuous-integration checks. The alternate names from the retired baseline are withdrawn and were never live. No official source defines these names — the choice is an internal specification decision, recorded here so it is not silently re-litigated.','These five names are frozen before any collection begins: a later rename silently breaks comparability with everything already recorded. Add new events as additions, never as renames. No collection can begin on this host in any case, because GitHub Pages serves static files only and runs no collector service.','— internal specification decision (no official source defines event names) · '+src('S04')),
         ('Published-claim correction (resolved 2026-11-21)','The capacity guide previously said Instant Pot “lists basket dimensions separately from volume”. Its live product page publishes a 6-quart volume with overall dimensions of 12.36 in wide × 12.83 in high × 14.92 in long, not a usable basket measurement. The wording now says exactly that.','When quoting a maker figure, say which measurement it is and link the page it came from.',src('S10')),
         ('Listing drift','All three observed listings still resolved to the same ASINs on 2026-11-21 and still describe the same items. Amazon prices, ratings and stock change continuously and are not republished anywhere on this site.','Keep the register as dated observations. Never present a snapshot as current price or availability.',src('S12')+' · '+src('S13')+' · '+src('S14')),
+        ('F-22 · Agent identification in the user-agent string','IP License §4 (Agent Terms) requires an agent to identify itself with `Agent/[agent name]` in its user agent string and not to conceal automated access. The listing pages cited in the product register were read through automated tooling on 2026-11-21; whether that tool sent an `Agent/...` token cannot be observed from inside the environment.','Treat the observed titles and breadcrumbs as presentational only and re-check them in a normal browser before using them in promotional copy. Nothing the site displays is drawn from those pages except an ASIN and a breadcrumb path.',src('S18')),
         ('Production analytics','No persistent approved deployment for the event service or enrolled report access.','Deploy the aggregate service and verify consent/privacy and log configuration before collection; ingest only authorized aggregate reports.',src('S04')+' · '+src('S02')),
     ]))
     events = [
