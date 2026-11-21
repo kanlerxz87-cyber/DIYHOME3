@@ -720,3 +720,43 @@ T25: done · T26: done · T27: needs review (published) · T28: withdrawn · T29
   here rather than made silently, and no other session had it open at the time (no open PR or board
   claim referenced it). The change only strengthens the rule — every previously passing tree still
   passes, and the real tree is unchanged at 0 findings.
+
+### T30 publish record — session `f23eebec` — complete
+
+- **PR #33** https://github.com/kanlerxz87-cyber/DIYHOME3/pull/33 — MERGED 2026-11-21T23:44:33Z, merge commit `6dc63c8`.
+  CI before merge: `verify` pass · `compliance-gate` pass · `evidence-boundaries` pass.
+- **Pages:** build `built` for `6dc63c8`, `error=none`; `Deploy GitHub Pages`, `Verify publication`,
+  `Independent source and identity audit`, `Affiliate compliance pipeline` all succeeded.
+- **Live check:** `/shop/?v=6dc63c8` renders the footer navigation group with all ten sections
+  (Home, Shop, Guides, Verification log, Executive summary, Product register, Flagged for review,
+  Measurement, Sources, Privacy) — one flat group, no dropdown — and every buying-link cell still
+  reads `Withheld pending validation`.
+- **Post-merge gate run on `main`:** build `--check` clean · `check.py` 4 OK · `check_release.py`
+  36 pages / 0 findings · `e10111d6` PASS · `audit-repo` OK · `validate_register` OK ·
+  `verification` 7 OK · `scripts` 6 OK · `e10111d6` 5 OK.
+- T30: done.
+
+## Session `f23eebec` — final summary
+
+| Task | Result |
+|---|---|
+| T25 — live re-read + reader-facing `/verified/` log | **done**, live at `/verified/` |
+| T26 — dated commission-rate table | **done**, live at `/sources/#rates` |
+| T27 — F-22 Agent identification | **needs review**, published on Flagged for Review |
+| T28 — duplicate category pages | **withdrawn**, never merged; no URL duplicated |
+| T29 — publish record | **done** (PRs #31, #32) |
+| T30 — single flat navigation group + stronger footer rule | **done** (PR #33) |
+
+Three findings from this session are worth carrying forward, in order of how much they cost:
+
+1. **A gate that only checks "non-empty" is not a gate.** The footer rule passed while a page could
+   lose any single dashboard link. It now compares the group as a set, with two negative controls
+   run against the real artifact. The same shape of weakness turned up twice in one session — the
+   `/sources/#rates` anchor that did not exist also passed every check.
+2. **Two sessions can be assigned the same task and neither can see the other.** T20 was claimed
+   here against `14c9851` and shipped elsewhere against a newer `main`. The coordination board only
+   works if a session re-reads `origin/main` **and** the board immediately before committing, not
+   only at the start. This session's board IDs were renumbered twice for the same reason.
+3. **Upstream policy moved and the site had to follow.** §2(t) and IP License §2(h)/(i) mean price,
+   ratings and Amazon imagery cannot be published from this host at all — not "should be refreshed",
+   but cannot. That is now stated as a rule on `/verified/` so a future session does not undo it.
