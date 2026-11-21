@@ -1,5 +1,6 @@
 """Editorial source register. Observations are not product intent confirmations."""
 DATE = '2026-11-20'
+RECHECK = '2026-11-21'
 TRACKING_ID = 'shopnow047c-20'
 DISCLOSURE = 'As an Amazon Associate I earn from qualifying purchases.'
 SOURCES = {
@@ -30,10 +31,31 @@ PRODUCTS = [
 SUBMISSIONS = [
     dict(row=i, product=PRODUCTS[idx]['id'], submitted_url='https://link.amazon/' + PRODUCTS[idx]['code'],
          observed_asin=PRODUCTS[idx]['observed_asin'], observed_redirect_target=SOURCES[PRODUCTS[idx]['source']][1],
-         observed_on=DATE, observation_source=PRODUCTS[idx]['source'], duplicate_of=2 if i == 3 else None,
+         observed_on=DATE, rechecked_on=RECHECK, observation_source=PRODUCTS[idx]['source'], duplicate_of=2 if i == 3 else None,
          intended_asin=None, official_listing_url=None, confirmed_on=None, confirmation_source=None)
     for i, idx in enumerate((0, 1, 1, 2), 1)
 ]
+# Category pages group the shortlist the way a reader shops: by the job, not by the audit.
+# Each `check` item is either quoted from the cited official page or clearly framed as a
+# question to ask; no price, rating, demand or superiority claim is made.
+CATEGORIES = [
+    dict(slug='walls-finishes', name='Walls & finishes', image='wallpaper', product='wallpaper-kit', guide='wallpaper-tools',
+         lead='Smoothing and trimming tools for peel-and-stick wallpaper, contact paper and backsplash tile.',
+         check=[('Kit contents', 'Art3d lists a red squeegee, a blue medium-hardness squeegee and a craft knife with four replacement blades in its A17999 kit. Kit contents differ between listings, so check the exact variant.', 'S11'),
+                ('Two different jobs', 'Art3d describes the squeegees as the bubble-removal tools and the craft knife as the trimming tool. Make sure whatever you choose covers both.', 'S11'),
+                ('Wall preparation', 'Follow the wallpaper manufacturer’s own surface and cutting instructions before the first strip goes on.', 'S11')]),
+    dict(slug='kitchen-organization', name='Kitchen organization', image='holder', product='towel-holder', guide='paper-towel-holder',
+         lead='Space-saving holders for rolls and wrap that otherwise take up the worktop.',
+         check=[('Mounting method', 'The observed listing offers self-adhesive or drilling. Check the surface first, and whether the space is rented.', 'S13'),
+                ('Roll clearance', 'Measure a full roll and the room at the open end before choosing a spot; a low-profile holder still needs space to swap the tube.', 'S13'),
+                ('What it attaches to', 'Cabinet undersides and wall finishes differ. Read the fitting instructions for the surface you actually have.', 'S13')]),
+    dict(slug='storage-shelving', name='Storage & shelving', image='rack', product='pan-rack', guide='cookware-racks',
+         lead='Adjustable racks that let pans stand upright, so the one you need is the one you can reach.',
+         check=[('Tier adjustment', 'The observed listing describes an 8-tier adjustable rack with tool-free assembly in three configurations.', 'S14'),
+                ('Pan size and weight', 'The listing describes lightweight cookware up to 11 in. Check your heaviest pan against that before relying on the tiers.', 'S14'),
+                ('Cabinet opening', 'Measure the opening with the door open, then check the assembled rack and handles clear it.', 'S14')]),
+]
+
 # Empty until a qualified operator can verify each product and its report in the enrolled workflow.
 SPECIAL_LINKS = {}
 
@@ -55,7 +77,7 @@ GUIDES = [
         ('Compare a real batch', 'Think about how often you cook for one versus several people. USDA advises against overcrowding air fryers because it limits circulation. Consider whether you would be happy to cook in batches.', 'S09'),
         ('Compare the daily routine', 'Measure the counter with the door open or drawer pulled out. Look up the manual for operating clearances, cleaning instructions and heat-safe placement.', 'S10')]),
     dict(slug='air-fryer-capacity', title='A no-hype checklist for comparing air fryer capacity', category='Countertop appliances', intro='Editorial working hypothesis (not a search-volume or superiority claim): advertised volume is a starting point, while usable cooking surface determines whether dinner fits.', sections=[
-        ('Find the dimensions behind the volume', 'Compare internal width and depth rather than just quarts. Check whether the maker publishes basket or tray dimensions for the exact model; Instant Pot, for example, lists basket dimensions separately from volume.', 'S10'),
+        ('Find the dimensions behind the volume', 'Compare internal width and depth rather than just quarts, and be sure which measurements you are comparing. Instant Pot publishes a 6-quart volume alongside overall dimensions of 12.36 in wide × 12.83 in high × 14.92 in long for its Vortex 6QT; those are the dimensions of the appliance, not a substitute for the usable basket area.', 'S10'),
         ('Try your usual meal on paper', 'Draw the listed footprint on paper and compare it with a typical serving. Leave room for air circulation; USDA recommends batches rather than overcrowding.', 'S09'),
         ('Check food safety separately', 'Advertised capacity doesn’t tell you whether food is done. Use a food thermometer and follow USDA’s safe internal temperature guidance.', 'S09')]),
     dict(slug='air-fryer-cleanup', title='How to assess cleanup and counter-space trade-offs', category='Countertop appliances', intro='Editorial working hypothesis (not a ranking claim): compare the space an appliance takes while in use, then count the removable pieces you will wash afterward.', sections=[

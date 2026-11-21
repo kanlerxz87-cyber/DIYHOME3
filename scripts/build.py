@@ -12,7 +12,7 @@ from urllib.parse import urlsplit, parse_qs
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'source'))
-from content import DATE, TRACKING_ID, DISCLOSURE, SOURCES, PRODUCTS, SUBMISSIONS, SPECIAL_LINKS, GUIDES
+from content import DATE, RECHECK, TRACKING_ID, DISCLOSURE, SOURCES, PRODUCTS, SUBMISSIONS, SPECIAL_LINKS, GUIDES, CATEGORIES
 
 PAGES_URL = 'https://kanlerxz87-cyber.github.io/DIYHOME3/'
 BRAND = 'DIY Home Upgrades'
@@ -37,6 +37,8 @@ LEGACY = {
     'verify/flagged.html': ('Flagged for Review', 'flagged-for-review/'),
 }
 ARROW = '<span aria-hidden="true">↗</span>'
+# Sources fetched again, signed out, during the 2026-11-21 session. Everything else keeps its earlier date.
+RECHECKED = {'S01','S02','S03','S04','S09','S10','S11','S12','S13','S14','S15','S16'}
 ICON = '<svg width="13" height="13" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7" stroke="currentColor"/><path d="M9 8v5m0-8v1" stroke="currentColor" stroke-width="1.5"/></svg>'
 
 
@@ -45,6 +47,9 @@ def validate(profile):
     assert len(product_ids) == len(PRODUCTS) and len(GUIDE) == len(GUIDES)
     assert all(x['product'] in product_ids and x['observation_source'] in SOURCES and x['observed_redirect_target'] == SOURCES[x['observation_source']][1] for x in SUBMISSIONS)
     assert all(s in SOURCES for g in GUIDES for _, _, s in g['sections'])
+    assert len({c['slug'] for c in CATEGORIES}) == len(CATEGORIES) == len(PRODUCTS)
+    assert all(c['product'] in product_ids and c['guide'] in GUIDE for c in CATEGORIES)
+    assert all(s in SOURCES for c in CATEGORIES for _, _, s in c['check'])
     assert not (set(SPECIAL_LINKS) - product_ids)
     if profile == 'pages' and SPECIAL_LINKS:
         raise ValueError('Commercial links cannot be built in the Pages profile.')
@@ -61,10 +66,10 @@ def validate(profile):
             raise ValueError(f'Missing release sign-off for {product_id}')
 
 
-def src(key):
+def src(key, label=None):
     name, url = SOURCES[key]
     rel = ' rel="sponsored noopener noreferrer"' if key in {'S10','S11','S12','S13','S14'} else ''
-    return f'<a href="{e(url, quote=True)}"{rel}>{e(name)}</a>'
+    return f'<a href="{e(url, quote=True)}"{rel}>{e(label or name)}</a>'
 
 
 def table(headers, rows):
@@ -125,8 +130,39 @@ def cta(product):
     return f'<div class="release-cta"><a class="button" href="{e(active["url"],quote=True)}" rel="sponsored noopener noreferrer" data-event="outbound_click" data-target="{pid}">See on Amazon · paid link {ARROW}</a></div>'
 
 
+def cat_for(product):
+    return next(c for c in CATEGORIES if c['product'] == product['id'])
+
+
 def cards(pre):
-    return '<div class="grid">' + ''.join(f'''<article class="card"><a class="card-media" href="{pre}guides/{p['guide']}/"><img src="{pre}assets/{p['image']}.jpg" alt="{e(p['alt'])}" width="580" height="340" loading="lazy"><span class="badge">Project guide</span></a><div class="card-copy"><p class="label">{e(p['category'])}</p><h3><a href="{pre}guides/{p['guide']}/">{e(p['title'])}</a></h3><p>{e(p['blurb'])}</p>{cta(p) or f'<a class="text-link" href="{pre}guides/{p["guide"]}/">What to look for {ARROW}</a>'}</div></article>''' for p in PRODUCTS) + '</div>'
+    return '<div class="grid">' + ''.join(f'''<article class="card"><a class="card-media" href="{pre}shop/{cat_for(p)['slug']}/"><img src="{pre}assets/{p['image']}.jpg" alt="{e(p['alt'])}" width="580" height="340" loading="lazy"><span class="badge">Category</span></a><div class="card-copy"><p class="label">{e(p['category'])}</p><h3><a href="{pre}shop/{cat_for(p)['slug']}/">{e(p['title'])}</a></h3><p>{e(p['blurb'])}</p>{cta(p) or f'<a class="text-link" href="{pre}guides/{p["guide"]}/">What to look for {ARROW}</a>'}</div></article>''' for p in PRODUCTS) + '</div>'
+
+
+def shop_table(pre):
+    rows = []
+    for p in PRODUCTS:
+        c = cat_for(p)
+        rows.append((f'<a href="{pre}shop/{c["slug"]}/">{e(p["title"])}</a>',
+                     e(p['category']), e(c['lead']),
+                     f'<a href="{pre}guides/{p["guide"]}/">Guide</a>',
+                     'Withheld pending validation',
+                     src(p['source'], 'Observed listing')))
+    return table(('Item', 'Category', 'The job it does', 'Read', 'Buying link', 'Source'), rows)
+
+
+def cat_pills(current):
+    out = ['<a href="../">All categories</a>']
+    for c in CATEGORIES:
+        label = e(c['name'])
+        if c['slug'] == current:
+            out.append(f'<a href="../{c["slug"]}/" aria-current="page">{label}</a>')
+        else:
+            out.append(f'<a href="../{c["slug"]}/">{label}</a>')
+    return '<nav class="pill-nav" aria-label="Shop categories">' + ''.join(out) + '</nav>'
+
+
+def category_checks(c, pre):
+    return ''.join(f'<h2>{e(h)}</h2><p>{e(text)}</p>' + (f'<div class="source-link">{src(key)}</div>' if key else '') for h, text, key in c['check'])
 
 
 def guide_list(collection, pre):
@@ -139,7 +175,11 @@ def render():
 <section class="section" id="edits"><div class="section-head"><div><p class="eyebrow line">The shortlist</p><h2>Shop the home edit</h2><p>Three small projects that earn their space.</p></div><a class="text-link" href="shop/">Explore all categories <span aria-hidden="true">→</span></a></div>{cards('')}<p class="caption">Category illustrations, not product photos. Buying links are withheld until validated.</p></section>
 <section class="section reading"><div class="section-head"><div><p class="eyebrow line">Late autumn / Countertop appliances</p><h2>Before you buy</h2><p>Kitchen questions worth answering before you make room on the counter.</p></div><a class="text-link" href="guides/">All buying guides <span aria-hidden="true">→</span></a></div>{guide_list(GUIDES[3:6], 'guides/')}</section>
 <section class="feed-band"><div><h2>Follow the home edit</h2><p>Get new guides in your feed reader. No newsletter sign-up required.</p></div><a class="button" href="feed.xml" data-event="feed_click" data-target="rss">Get the RSS feed {ARROW}</a></section></div>''')
-    route('shop/', 'Shop the home edit', 'Compare supplies for walls and finishes, kitchen organization and cookware storage.', '<div class="wrap">'+head('The shortlist','Shop the home edit','Start with the small upgrade you want to make. These guides show what to check before buying.')+cards('../')+'<p class="caption">Category illustrations, not product photos. Buying links are withheld until validated.</p><p class="release-cta"><a class="text-link" href="../product-register/">See listing observations and link status →</a></p></div>')
+    route('shop/', 'Shop the home edit', 'Compare supplies for walls and finishes, kitchen organization and cookware storage.', '<div class="wrap">'+head('The shortlist','Shop the home edit','Three small upgrades, grouped by the room they fix. Pick a category to see the item, what to check before buying, and the guide that explains it.')+cards('../')+f'<div class="section"><div class="section-head"><div><p class="eyebrow line">At a glance</p><h2>The shortlist</h2><p>Every item in the shop, with its buying-link status.</p></div></div>'+shop_table('../')+'<p class="caption">Category illustrations, not product photos. Buying links are withheld until the Associates validation below is complete, so nothing here earns a commission yet.</p></div><p class="release-cta"><a class="text-link" href="../product-register/">Listing observations and link status →</a></p></div>')
+    for c in CATEGORIES:
+        p = next(x for x in PRODUCTS if x['id'] == c['product'])
+        rows = [(f'<a href="../../guides/{p["guide"]}/">{e(p["title"])}</a>', f'<a href="{e(SOURCES[p["source"]][1])}" rel="sponsored noopener noreferrer">{e(p["observed_asin"])}</a>', RECHECK, f'<a href="../../guides/{p["guide"]}/">Open the guide</a>', 'Withheld pending validation', src(p['source'], 'Observed listing'))]
+        route('shop/'+c['slug']+'/', c['name'], c['lead'], '<div class="wrap">'+head('The shortlist', c['name'], c['lead'])+cat_pills(c['slug'])+table(('Item','Observed ASIN','Rechecked','Read','Buying link','Source'), rows)+'<div class="prose">'+category_checks(c, '../../')+f'<p><a class="text-link" href="../../guides/{p["guide"]}/">Read the full buying guide {ARROW}</a></p></div><p class="caption">Observed ASINs resolved from the submitted short link on {DATE} and rechecked on {RECHECK}. Prices, ratings and stock are not republished.</p></div>')
     route('guides/', 'Buying guides', 'Question-led buying guides for everyday DIY projects and countertop appliances.', '<div class="wrap">'+head('The reading room','Buying guides','Questions to ask before you buy, grouped by the room and the job.')+'<nav class="pill-nav" aria-label="Guide clusters"><a href="#home-projects">Small home projects</a><a href="#appliances">Countertop appliances</a></nav><h2 id="home-projects">Small home projects</h2>'+guide_list(GUIDES[:3],'')+'<div class="section"><h2 id="appliances">Countertop appliances</h2>'+guide_list(GUIDES[3:],'')+'</div></div>')
     for g in GUIDES:
         pic = next((p for p in PRODUCTS if p['guide']==g['slug']),None)
@@ -162,24 +202,28 @@ def desk_page(path, title, lead, body):
 
 def desk_pages():
     desk_page('executive-summary','Executive summary','Launch decision: publish the editorial project; hold the affiliate rollout until the evidence and hosting are in place.', table(('Area','Finding','Official source'),[
-        ('Catalog','Four submissions, three unique links. The observations are wallpaper tools, a towel holder and a cookware rack; none confirms intended product identity.', ' · '.join(src(s) for s in ('S12','S13','S14'))),
+        ('Catalog','Four submissions, three unique links. The observations are wallpaper tools, a towel holder and a cookware rack; none confirms intended product identity. All three were re-fetched on 2026-11-21 and still resolve to the same ASINs.', ' · '.join(src(s) for s in ('S12','S13','S14'))),
         ('Affiliate release',f'Requested tracking ID: <code>{TRACKING_ID}</code>. Enrollment, tracking attribution and compliance of the supplied short links are unverified. No paid links are live.',src('S01')+' · '+src('S02')),
         ('Hosting','GitHub Pages carries the non-transactional editorial site only. Do not launch the affiliate business on Pages; migrate the public canonical to an eligible host before commercial release.',src('S04')),
         ('Research','The seven guides are editorial starting points, not rankings or tests. Price, reviews, commissions, search demand and competitive performance are not published without authorized evidence.',src('S03')+' · '+src('S08')),
+        ('Reader shop','Three category pages (walls and finishes, kitchen organization, storage and shelving) each list the item, the ASIN, the date it was rechecked and the guide. Buying buttons stay absent until the links are validated, so the shop is honest but cannot yet earn.',src('S06')),
         ('Publishing','Review possible guide topics every other Thursday, starting December 3, 2026. Publish only when evidence and review are ready. The sitemap and RSS update together from the guide register.',src('S06')),
         ('Measurement','The collector is implemented and tested locally; GitHub Pages does not run it. Search Console ownership and Amazon reporting have not been verified.',src('S08')+' · '+src('S02')),
         ('Disclosure','The Associates statement appears under the masthead and in the footer. Any released Special Link also gets adjacent paid-link text and a sponsored attribute.',src('S24')+' · '+src('S07')+' · '+src('S05')),
+    ])+f'<h2>The four submitted links</h2><p>Each row keeps the owner\'s text as submitted. The observed destination is a dated observation; the intended ASIN stays separate and blank.</p>'+table(('Submitted URL','Observed listing','Rechecked','Intended ASIN','Status','Source'),[
+        (f'<code>{e(x["submitted_url"])}</code>', f'<a href="{e(x["observed_redirect_target"])}" rel="sponsored noopener noreferrer">{e(x["observed_asin"])}</a>', e(x['rechecked_on']), e(x['intended_asin'] or ''), 'Unverified intent; duplicate of #2' if x['duplicate_of'] else 'Unverified intent', src(x['observation_source'])) for x in SUBMISSIONS
     ])+'<p><a class="text-link" href="../flagged-for-review/">Open flagged items →</a></p>')
     details = []
     for r in SUBMISSIONS:
         val = lambda k: e(str(r[k])) if r[k] else ''
         details.append((str(r['row']), f'<code>{e(r["submitted_url"])}</code>',
                         f'<a href="{e(r["observed_redirect_target"])}" rel="sponsored noopener noreferrer">{e(r["observed_asin"])}</a><br>{r["observed_on"]}',
+                        e(r['rechecked_on']),
                         val('intended_asin'),val('official_listing_url'),val('confirmed_on'),
                         src(r['confirmation_source']) if r['confirmation_source'] else '',
                         ('Unverified intent; duplicate of #2' if r['duplicate_of'] else 'Unverified intent') if not r['confirmed_on'] else 'Intent confirmed', src(r['observation_source'])))
     desk_page('product-register','Product register','The observed destination is a dated Amazon listing snapshot, not a confirmation of what the submitter intended.',
-        '<p class="notice">Submitted short links are preserved as text only. Observed targets are the final listing paths, with query strings removed. Prices, ratings, commission and availability are omitted.</p>'+table(('Row','Submitted URL','Observed redirect / date','Intended ASIN','Official listing URL','Confirmed on','Confirmation source','Status','Observation source'), details))
+        f'<p class="notice">Submitted short links are preserved as text only. Observed targets are the final listing paths, with query strings removed. Every observed listing page was re-fetched on {RECHECK} and still resolved to the same ASIN. Prices, ratings, stock, commission and ranking are omitted because they are volatile or need authorized reports.</p>'+table(('Row','Submitted URL','Observed redirect / date','Rechecked','Intended ASIN','Official listing URL','Confirmed on','Confirmation source','Status','Observation source'), details))
     desk_page('flagged-for-review','Flagged for Review','These open items do not block the editorial site. They do block unsupported claims, affiliate publishing or production measurement.',table(('Flag','What is known','Release gate','Official source'),[
         ('Intended products','Observed redirects show home-upgrade items, not the brief’s air-fryer hypotheses. The towel-holder URL was submitted twice.','Keep all four rows. Confirm intended ASIN and official URL separately.',src('S02')+' · '+src('S12')+' · '+src('S13')+' · '+src('S14')),
         ('Special Links','Format, enrollment and attribution for the requested tag remain unresolved; the short links are not declared invalid.','Generate one Special Link per confirmed product in Associates Central. Verify destination and report attribution before any scale-up. Do not make a self-purchase.',src('S01')+' · '+src('S02')+' · '+src('S03')),
@@ -187,6 +231,8 @@ def desk_pages():
         ('Price, reviews and commission','No authorized product feeds or reports in this session; official fixed standard rates list Kitchen at 4.50% and Tools / Home Improvement at 3.00%, while Creators API requires Associates enrollment and at least 10 qualifying sales in 30 days.','Review current Creators API license, credentials, approvals, allowed data uses and display freshness; do not publish static prices/ratings, conversion scores or revenue forecasts, and do not send Program Content to AI without permission.',src('S03')+' · '+src('S15')+' · '+src('S16')),
         ('Listing & manufacturer discrepancies','Official pages disagree: Art3d A17999 lists 4.2 oz, Metal and 4 blades (no tape measure), whereas Amazon B08FKW9JRM lists 3.52 oz, Plastic, a tape measure, and both 4 and 5 blades in separate sections. Amazon B08DY9HRWD states up to 11 in cookware in its title vs 12 in in its bullets and links newer heavy-duty model B0BYYTQMTR. Amazon B0BSKQW2T2 omits model number, country of origin and date first available.','Leave unconfirmed fields blank; never merge conflicting specs or infer origin or hands-on test results.',src('S11')+' · '+src('S12')+' · '+src('S13')+' · '+src('S14')),
         ('SG-29 · Search Console','No verified property or query report.','Verify the canonical URL-prefix property, submit the sitemap and review the Performance report; no ranking or indexing guarantee.',src('S08')+' · '+src('S06')),
+        ('Published-claim correction (resolved 2026-11-21)','The capacity guide previously said Instant Pot “lists basket dimensions separately from volume”. Its live product page publishes a 6-quart volume with overall dimensions of 12.36 in wide × 12.83 in high × 14.92 in long, not a usable basket measurement. The wording now says exactly that.','When quoting a maker figure, say which measurement it is and link the page it came from.',src('S10')),
+        ('Listing drift','All three observed listings still resolved to the same ASINs on 2026-11-21 and still describe the same items. Amazon prices, ratings and stock change continuously and are not republished anywhere on this site.','Keep the register as dated observations. Never present a snapshot as current price or availability.',src('S12')+' · '+src('S13')+' · '+src('S14')),
         ('Production analytics','No persistent approved deployment for the event service or enrolled report access.','Deploy the aggregate service and verify consent/privacy and log configuration before collection; ingest only authorized aggregate reports.',src('S04')+' · '+src('S02')),
     ]))
     events = [
@@ -200,7 +246,16 @@ def desk_pages():
         '<h2>Campaign ledger</h2><p>No authorized observations loaded. Blank means no report, not zero.</p>'+table(('Timestamp (UTC)','Source / report reference','Channel','Eligible sessions','Clicks','Reported orders'),[( '', ' · '.join((src('S02'),src('S08'))),'','','','')])+
         '<div class="prose"><h2>What to publish next</h2><p>During the fortnightly editorial review, compare query and landing-page impressions and clicks in Search Console. Pick one question where a guide can add a useful answer. Compare equivalent periods and label small samples; avoid interpreting onsite counts as sales. Reconcile orders separately against the enrolled Tracking ID report.</p><p>No conversion score or revenue forecast is presented.</p></div>')
     labels = [('SG-27','Navigation labels: Shop, Guides and a single Editorial desk menu.','S08'),('SG-28','RSS ships and is discoverable in the masthead metadata and footer.','S06'),('SG-29','Search Console is pending verified ownership.','S08'),('SG-30','RSS is the reader follow option; no email address capture.','S06')]
-    desk_page('sources','Source library','Official sources and a dated verification record. References support the specific claim alongside them, not assumptions about the products.',table(('Ref.','Publisher / document','Reviewed'),[(s,src(s),DATE) for s in SOURCES])+ '<h2>Publication checklist</h2>'+table(('Row','Disposition','Reference'),[(i,e(a),src(s)) for i,a,s in labels]))
+    desk_page('sources','Source library','Official sources and a dated verification record. References support the specific claim alongside them, not assumptions about the products.',table(('Ref.','Publisher / document','First reviewed','Rechecked'),[(s,src(s),DATE,RECHECK if s in RECHECKED else '') for s in SOURCES])+
+        f'<h2>Recheck record — {RECHECK}</h2><p>Each row below was fetched again in this session, signed out, at the linked official page.</p>'+table(('Claim checked','What the page says now','Source'),[
+            ('Commission rates','Kitchen 4.50%; Home, Home Improvement and Tools 3.00%; all other categories 4.00%. Unchanged from the {DATE} record.'.replace('{DATE}', DATE),src('S15')),
+            ('API prerequisites','Enrollment, at least 10 qualifying sales in the past 30 days, Associates Central registration and credentials. Unchanged.',src('S16')),
+            ('Hosting rule','“GitHub Pages is not intended for or allowed to be used as a free web-hosting service to run your online business, e-commerce site…”',src('S04')),
+            ('Program policies','Page header still shows an update date of April 14, 2026; the 24-hour session and 89-day cart window wording is unchanged.',src('S03')),
+            ('Air-fryer safety','Overcrowding limits air circulation; batch large amounts; use a food thermometer; do not air fry raw stuffed breaded chicken breast products.',src('S09')),
+            ('Vortex 6QT','Air fryer basket is top-rack dishwasher safe (FAQ); Product Specs list 6.0 quart volume and 12.36 W × 12.83 H × 14.92 L in.',src('S10')),
+            ('Art3d A17999','Red squeegee, blue medium-hardness squeegee and craft knife with four replacement blades; 4.2 oz, metal, 6.75 × 9.25 × 0.35 in.',src('S11')),
+        ])+'<h2>Publication checklist</h2>'+table(('Row','Disposition','Reference'),[(i,e(a),src(s)) for i,a,s in labels]))
     route('privacy/','Privacy','Event collection and privacy for the editorial release.', '<div class="wrap">'+head('Publication notes','Privacy','The GitHub Pages editorial release does not send custom analytics events or collect email addresses.')+'<div class="prose"><h2>RSS</h2><p>The feed can be read without signing up. Your feed reader may apply its own privacy terms.</p><h2>Optional first-party measurement</h2><p>On a configured self-hosted edition, the collector stores counts by UTC day, event type and fixed content ID. It does not store IP addresses, cookies, device IDs, user agents, referrers or full URLs. The browser honors Global Privacy Control and Do Not Track.</p><p>The static host may apply its own privacy practices. <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub General Privacy Statement</a>.</p></div></div>',hidden=True)
     route('404','Page not found','Return to the home edit or browse the buying guides.', '<div class="wrap">'+head('Not found','That page has moved','Try the home edit or look for another guide.')+f'<a class="button" href="{CANON}">Back to the home edit</a></div>',hidden=True,notfound=True)
 
