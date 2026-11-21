@@ -448,3 +448,11 @@ Gates re-run after the correction: `tools/verify.mjs` 223 checks all passing ·
 `tools/audit.mjs` 24 checks, 0 findings · `tools/linkcheck.mjs` 0 broken links ·
 `collector/test.mjs` 27 assertions passing. Integrated checkers unaffected:
 `scripts/check.py` OK · `verification/check_release.py` 32 pages, 0 findings.
+
+## Release recheck — session d47e5378
+
+| Task | Status | Owner | Files |
+|---|---|---|---|
+| Independent current release and deployment recheck | in progress | d47e5378 | `release_checks/d47e5378/**`, `COORDINATION.md` |
+
+- 2026-11-21: Claiming an independent verification scope; existing publication, data, and other sessions' scopes remain untouched. Findings will be recorded here and in the scoped report.
