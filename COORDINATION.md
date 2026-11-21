@@ -496,3 +496,10 @@ Claim was committed and pushed before work on the Arena-assigned branch `arena/8
 - 2026-11-21: Merge of `main` (PR #22, session `8229e62c`) into `arena/2a2c477f-diyhome3`: kept both the automation-scope rows and the T20 storefront rows in the executive summary, and kept both board sections. No other session's work discarded.
 - Publish record: [PR #22](https://github.com/kanlerxz87-cyber/DIYHOME3/pull/22) merged 2026-11-21T23:24:50Z as `8c6035c1205e0713836051cfff99fa2d4bce26c2`. PR checks `verify`, `evidence-boundaries`, and `compliance-gate` passed. [GitHub Pages deploy](https://github.com/kanlerxz87-cyber/DIYHOME3/actions/runs/44961675512) succeeded; Pages API reports `built` for the merge commit. Live executive summary was re-fetched with a cache-busting query and showed the new automation boundary rows.
 - 2026-11-21: The publish-record follow-up PR conflicted with concurrent T20 storefront changes in `COORDINATION.md`; preserved both this publish record and the integration session's board updates.
+## Fresh line-by-line re-verification — session `b0080e81` (`arena/b0080e81-diyhome3`)
+
+| ID | Task | Status | Owner | File scope |
+|---|---|---|---|---|
+| T19 | Re-verify all official sources, live Pages site, and local check suites on 2026-11-21; record dated report | in progress | `b0080e81` | `release_checks/b0080e81/` + this append-only board entry |
+
+- 2026-11-21: Claimed T19. Scope is non-overlapping with PR #18 (`arena/d47e5378-diyhome3`, files `COORDINATION.md` + `release_checks/d47e5378/REPORT.md`): this session writes only `release_checks/b0080e81/` and appends to this board. No published page, `source/`, `data/`, `scripts/`, `verification/`, or other session's `release_checks/` scope will be edited. If a defect is found in a published file, it will be logged here as a request for the integration session rather than edited directly.
