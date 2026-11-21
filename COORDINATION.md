@@ -448,3 +448,14 @@ Gates re-run after the correction: `tools/verify.mjs` 223 checks all passing ·
 `tools/audit.mjs` 24 checks, 0 findings · `tools/linkcheck.mjs` 0 broken links ·
 `collector/test.mjs` 27 assertions passing. Integrated checkers unaffected:
 `scripts/check.py` OK · `verification/check_release.py` 32 pages, 0 findings.
+
+## Release recheck — session d47e5378
+
+| Task | Status | Owner | Files |
+|---|---|---|---|
+| Independent current release and deployment recheck | done | d47e5378 | `release_checks/d47e5378/**`, `COORDINATION.md` |
+
+- 2026-11-21: Claiming an independent verification scope; existing publication, data, and other sessions' scopes remain untouched. Findings will be recorded here and in the scoped report.
+
+- 2026-11-21: Recheck complete; `release_checks/d47e5378/REPORT.md` records scope, source links and limitations. Local build consistency, publication checks and tests passed (32 HTML pages, zero release-check findings). GitHub reports the live baseline deploy succeeded; front page and flagged page were retrieved. Amazon's agreement and GitHub Pages limits were rechecked. Affiliate attribution, verified product intent, Search Console and live analytics remain unresolved and are already published on Flagged for Review. No listing re-verification is implied by this recheck.
+- Status: done. Initial pull of this newly created branch failed because its remote ref did not yet exist; pulled `main` before the first push instead. No conflict.
