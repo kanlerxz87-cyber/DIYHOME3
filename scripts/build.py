@@ -96,9 +96,8 @@ def route(path, title, description, body, *, guide='', hidden=False, notfound=Fa
     home = pre or './'
     key = guide or ('archive' if path in LEGACY else path.strip('/') or 'home')
     brand = f'<a class="brand" href="{home}"><span class="mark"><img src="{pre}assets/mark.svg" alt="" width="39" height="39"></span><span>DIY Home Upgrades<small>The practical home edit</small></span></a>'
-    nav = ''.join(f'<a href="{pre+p if p else home}"'+ (' aria-current="page"' if p == path else '') + f'>{t}</a>' for p,t in SHOP.items())
-    desktop = ''.join(f'<a href="{pre+p}">{t}</a>' for p,t in DESK.items())
-    foot = ''.join(f'<a href="{pre+p}">{t}</a>' for p,t in {**DESK, 'feed.xml': 'RSS', 'privacy/': 'Privacy'}.items())
+    current = guide and 'guides/' or path
+    nav = ''.join(surface(pre, r, t, primary=r in ('', 'shop/', 'guides/'), current=(r == current)) for r, t in SURFACES)
     canonical = '' if notfound else f'<link rel="canonical" href="{CANON+path}">'
     if hidden: canonical += '<meta name="robots" content="noindex,follow">'
     schema = ''
@@ -110,10 +109,10 @@ def route(path, title, description, body, *, guide='', hidden=False, notfound=Fa
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title if path == '' and not notfound else title+' | '+BRAND)}</title><meta name="description" content="{e(description,quote=True)}">{canonical}
 <meta property="og:title" content="{e(title,quote=True)}"><meta property="og:description" content="{e(description,quote=True)}"><meta property="og:image" content="{CANON}assets/hero.jpg"><link rel="alternate" type="application/rss+xml" title="{BRAND}" href="{pre}feed.xml"><link rel="icon" href="{pre}assets/mark.svg"><link rel="stylesheet" href="{pre}assets/site.css">{schema}<script defer src="{pre}assets/analytics.js"></script></head>
-<body><a class="skip" href="#main">Skip to content</a><header class="mast"><div class="wrap mast-inner">{brand}<nav class="main-nav" aria-label="Main navigation">{nav}<details class="desk"><summary>Editorial desk</summary><div class="desk-menu">{desktop}</div></details></nav></div></header>
+<body><a class="skip" href="#main">Skip to content</a><header class="mast"><div class="wrap mast-inner">{brand}<nav class="main-nav" aria-label="All sections">{nav}</nav></div></header>
 <aside class="disclosure" aria-label="Affiliate disclosure">{ICON}{DISCLOSURE}</aside>
 <main id="main">{body}</main>
-<footer class="footer"><div class="wrap"><div class="footer-top">{brand}<nav class="footer-links" aria-label="Footer navigation">{foot}</nav></div><p>{DISCLOSURE} · Independent editorial project.</p></div></footer></body></html>
+<footer class="footer"><div class="wrap"><div class="footer-top">{brand}<nav class="footer-links" aria-label="All sections">{nav}</nav></div><p>{DISCLOSURE} · Independent editorial project.</p></div></footer></body></html>
 ''')
     if not hidden:
         INDEX.append(path)
@@ -164,6 +163,20 @@ def cat_pills(current):
 
 def category_checks(c, pre):
     return ''.join(f'<h2>{e(h)}</h2><p>{e(text)}</p>' + (f'<div class="source-link">{src(key)}</div>' if key else '') for h, text, key in c['check'])
+
+
+def surface(pre, route, title, *, primary=False, current=False):
+    """One link from an indexable page to a desk surface. `primary=True` puts it in the
+    narrow masthead strip; `current=True` marks the surface you are reading."""
+    href = pre + route if route else pre or './'
+    cls = ' class="primary"' if primary else ''
+    return f'<a href="{href}"'+(' aria-current="page"' if current else '')+cls+f'>{e(title)}</a>'
+
+
+# Stated requirement: "keep every dashboard surface reachable from the footer and a single
+# navigation group". SURFACES is rendered twice per page (masthead strip + footer) and the
+# release checker asserts the footer link on every page, so the claim cannot quietly rot.
+SURFACES = (('', 'Home'), ('shop/', 'Shop'), ('guides/', 'Guides'), ('verified/', 'Verification log'), ('executive-summary/', 'Executive summary'), ('product-register/', 'Product register'), ('flagged-for-review/', 'Flagged for review'), ('measurement/', 'Measurement'), ('sources/', 'Sources'), ('privacy/', 'Privacy'))
 
 
 def guide_list(collection, pre):

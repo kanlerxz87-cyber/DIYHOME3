@@ -24,7 +24,8 @@ class ReleaseTest(unittest.TestCase):
         path.write_text(content, encoding='utf-8')
 
     def html(self, route, body, head='', footer=None):
-        footer = (f'{DISCLOSURE}<a href="{DEFAULT_URL}review/">Flagged for Review</a>'
+        footer = (f'{DISCLOSURE}<nav aria-label="All sections">'
+                  f'<a href="{DEFAULT_URL}review/">Flagged for Review</a></nav>'
                   if footer is None else footer)
         return (f'<html><head><link rel="canonical" href="{DEFAULT_URL}{route}">{head}</head><body>'
                 f'<header>Home</header><aside>{DISCLOSURE}</aside><main>{body}</main>'
@@ -40,9 +41,10 @@ class ReleaseTest(unittest.TestCase):
         self.write('guide/index.html', self.html('guide/',
                    '<a href="https://www.amazon.com/dp/B08FKW9JRM">Evidence</a>', footer=''))
         errors, _ = self.check()
-        self.assertEqual(4, len(errors), errors)
+        self.assertEqual(5, len(errors), errors)
         for phrase in ('missing fragment ID', 'missing rel=sponsored',
-                       'statement missing from footer', 'footer missing review/'):
+                       'statement missing from footer', 'no footer navigation group',
+                       'footer has no internal links'):
             self.assertTrue(any(phrase in error for error in errors), errors)
 
     def test_rejects_cross_project_assets(self):
@@ -60,7 +62,24 @@ class ReleaseTest(unittest.TestCase):
     def test_href_less_footer_still_fails_dashboard_check(self):
         self.write('guide/index.html', self.html('guide/', '<h1 id="buy">Guide</h1>', footer=DISCLOSURE))
         errors, _ = self.check()
-        self.assertEqual(['guide/index.html: footer missing review/'], errors)
+        self.assertEqual(['guide/index.html: no footer navigation group',
+                          'guide/index.html: footer has no internal links'], errors)
+
+    def test_partial_footer_navigation_removal_is_caught(self):
+        """Positive control for the rule this session strengthened. Before it, deleting one
+        link from the footer group still passed, because the footer was merely non-empty."""
+        self.write('guide/index.html', self.html('guide/', '<h1 id="buy">Guide</h1>',
+                   footer=f'{DISCLOSURE}<nav aria-label="All sections">'
+                          f'<a href="{DEFAULT_URL}">Home</a></nav>'))
+        errors, _ = self.check()
+        self.assertEqual(['guide/index.html: footer navigation missing review/'], errors)
+
+    def test_footer_navigation_inside_a_different_nav_does_not_count(self):
+        self.write('guide/index.html', self.html('guide/', '<h1 id="buy">Guide</h1>',
+                   footer=f'{DISCLOSURE}<nav aria-label="Elsewhere">'
+                          f'<a href="{DEFAULT_URL}review/">Flagged for Review</a></nav>'))
+        errors, _ = self.check()
+        self.assertEqual(['guide/index.html: no footer navigation group'], errors)
 
 
 if __name__ == '__main__':
