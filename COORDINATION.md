@@ -459,3 +459,12 @@ Gates re-run after the correction: `tools/verify.mjs` 223 checks all passing ·
 
 - 2026-11-21: Recheck complete; `release_checks/d47e5378/REPORT.md` records scope, source links and limitations. Local build consistency, publication checks and tests passed (32 HTML pages, zero release-check findings). GitHub reports the live baseline deploy succeeded; front page and flagged page were retrieved. Amazon's agreement and GitHub Pages limits were rechecked. Affiliate attribution, verified product intent, Search Console and live analytics remain unresolved and are already published on Flagged for Review. No listing re-verification is implied by this recheck.
 - Status: done. Initial pull of this newly created branch failed because its remote ref did not yet exist; pulled `main` before the first push instead. No conflict.
+
+## Independent verification — session `99686052` (`arena/99686052-diyhome3`)
+
+| Task | Status | Owner | Files |
+|---|---|---|---|
+| Line-by-line verification of the live editorial release against official sources; build/link/disclosure/sponsored/feed/sitemap/analytics gates; live Pages confirmation | done | 99686052 | `release_checks/99686052/**`, `COORDINATION.md` (append only) |
+
+- 2026-11-21: Claiming an independent verification scope on `arena/99686052-diyhome3`. Existing publication, data, scripts, and other sessions' scopes (including `release_checks/d47e5378/**` on open PR #18) remain untouched. If a site defect is found, it will be logged here as a request instead of edited directly. Findings will be recorded in `release_checks/99686052/REPORT.md`.
+- 2026-11-21: Verification complete — see `release_checks/99686052/REPORT.md`. All 7 official sources re-fetched and confirmed (Operating Agreement 2025-10-15, Policies 2026-04-14, FTC Endorsement Guides FAQ, Google `rel="sponsored"`, GitHub Pages limits, Standard Commission rates Kitchen 4.50% / Tools-Home 3.00%, Creators API prerequisites). All 32 pages: disclosure above fold + footer, 0 tagged CTAs, 0 unsponsored product links, 0 published prices/ratings. Gates: `build.py --check` 0, `check.py` 2 OK, `check_release.py` 32 pages 0 findings, verification 5 OK, affiliate pipeline 6 OK, `audit-repo` OK, ledger OK. Live Pages `built` from `main`; homepage, flagged, product-register, measurement, feed fetched live and matching. No site defect found, so no site file was edited. Amazon listing observations were not re-fetched this session (prior dated observations preserved as observed-only). Irregularities unchanged and already published on Flagged for Review.
