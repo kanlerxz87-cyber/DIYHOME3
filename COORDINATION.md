@@ -692,3 +692,31 @@ rating or stock value. `SPECIAL_LINKS` remains `{}`.
 Main's F-08 already covers "the observations were collected by automated tooling; treat them as provisional". F-22 cites IP License §4 for the narrower, testable obligation: the `Agent/[agent name]` user-agent token. They are adjacent, not identical, and merging them would lose the specific requirement. If a future session consolidates them, keep the §4 citation and the instruction to re-observe in a browser.
 
 T25: done · T26: done · T27: needs review (published) · T28: withdrawn · T29: done
+
+### T30 — every dashboard surface one click away, and a rule that proves it — session `f23eebec`
+
+| ID | Task | Status | Owner | File scope |
+|---|---|---|---|---|
+| T30 | Replace the collapsed "Editorial desk" dropdown with one flat navigation group rendered in the masthead and footer; strengthen the footer assertion so a partial removal fails | done | `f23eebec` | `scripts/build.py`, `assets/site.css`, `verification/check_release.py`, `verification/test_check_release.py` |
+
+- **The gap.** The brief asks to "keep every dashboard surface reachable from the footer and a
+  single navigation group". Both were true in effect but fragile: the footer *did* carry all nine
+  surfaces, yet `check_release.py` only asserted that a page's footer was **non-empty** before
+  looking for each required route. A page could keep its Home link and silently lose Verification
+  log, and the check passed. Demonstrated on the real tree, not hypothesised: deleting one footer
+  link produced **0 findings** under the old rule.
+- **The fix, in two parts.** (1) `SURFACES` in `scripts/build.py` is one ordered list rendered
+  into `nav[aria-label="All sections"]` twice per page — masthead strip and footer. The collapsed
+  `<details>` dropdown is gone, so no dashboard surface requires opening a menu. (2) The checker now
+  records `in_nav` per anchor, compares the footer group against the required set **as a set**, and
+  reports the specific missing route.
+- **Negative controls run against the real artifact**, not just fixtures:
+  `remove-one-link` → `shop/index.html: footer navigation missing verified/`;
+  `wrong-nav-label` → `shop/index.html: no footer navigation group`. Clean tree: 36 pages, 0 findings.
+- Two fixtures encoded the weaker behaviour and were updated; two new tests were added
+  (`partial_footer_navigation_removal_is_caught`, `footer_navigation_inside_a_different_nav_does_not_count`).
+  `verification` suite: **7 tests OK**.
+- This session did not own `verification/check_release.py` before this task; the edit is recorded
+  here rather than made silently, and no other session had it open at the time (no open PR or board
+  claim referenced it). The change only strengthens the rule — every previously passing tree still
+  passes, and the real tree is unchanged at 0 findings.

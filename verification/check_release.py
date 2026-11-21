@@ -22,12 +22,17 @@ class Page(HTMLParser):
         self.feeds = []
         self.text = defaultdict(list)
         self.region = 'masthead area'
+        self.in_nav = False
         self.skip_text = False
 
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if a.get('id'):
             self.ids.add(a['id'])
+        if tag == 'nav' and (a.get('aria-label') or '').lower() == 'all sections':
+            self.in_nav = True
+        elif tag == 'nav':
+            self.in_nav = False
         if tag == 'a' and a.get('name'):
             self.ids.add(a['name'])
         if tag in {'script', 'style'}:
@@ -37,7 +42,7 @@ class Page(HTMLParser):
         if tag == 'footer':
             self.region = 'footer'
         if tag == 'a' and a.get('href'):
-            self.links.append((a['href'], set((a.get('rel') or '').lower().split()), self.region))
+            self.links.append((a['href'], set((a.get('rel') or '').lower().split()), self.region, self.in_nav))
         if tag == 'link' and a.get('href'):
             rel = (a.get('rel') or '').lower().split()
             if 'canonical' in rel:
@@ -47,11 +52,13 @@ class Page(HTMLParser):
                 self.feeds.append(a['href'])
         key = 'href' if tag == 'link' else 'src' if tag in {'img', 'script', 'source', 'video', 'audio'} else None
         if key and a.get(key):
-            self.links.append((a[key], set(), self.region))
+            self.links.append((a[key], set(), self.region, self.in_nav))
 
     def handle_endtag(self, tag):
         if tag in {'script', 'style'}:
             self.skip_text = False
+        if tag == 'nav':
+            self.in_nav = False
         if tag == 'footer':
             self.region = 'after footer'
 
@@ -121,6 +128,8 @@ def audit(root, base, dashboard=(), guides=()):
 
     canonical = {}
     footer_targets = defaultdict(set)
+    nav_targets = defaultdict(set)
+    nav_present = defaultdict(bool)
     for path, page in pages.items():
         name = path.relative_to(root).as_posix()
         route = name.removesuffix('index.html')
@@ -137,13 +146,16 @@ def audit(root, base, dashboard=(), guides=()):
                 errors.append(f'{name}: canonical must resolve to this page without a query or fragment')
             else:
                 canonical[path] = url
-        for href, rel, region in page.links:
+        for href, rel, region, in_nav in page.links:
             absolute = urljoin(served, href)
             if is_product(absolute) and 'sponsored' not in rel:
                 errors.append(f'{name}: missing rel=sponsored on {href}')
             f = target(name, absolute, required=False, fragment=True)
             if region == 'footer' and f:
                 footer_targets[path].add(f)
+                if in_nav:
+                    nav_targets[path].add(f)
+                    nav_present[path] = True
 
     def xml(path):
         try:
@@ -191,12 +203,28 @@ def audit(root, base, dashboard=(), guides=()):
                 errors.append(f'{href}: duplicate entry URL {url}')
             feed_urls.add(url)
 
+    # "Reachable from the footer in a single navigation group": the group is compared as a
+    # set, so a partial removal now fails instead of passing because the footer is non-empty.
+    required = set()
+    for route in dashboard:
+        f = target('required dashboard route', urljoin(base, route))
+        if f:
+            required.add(f)
+    if required:
+        for page in pages:
+            seen = nav_targets.get(page, set())
+            if not nav_present.get(page):
+                errors.append(f'{page.relative_to(root)}: no footer navigation group')
+                continue
+            for f in sorted(required - seen):
+                errors.append(f'{page.relative_to(root)}: footer navigation missing '
+                              f'{f.relative_to(root).as_posix().removesuffix("index.html")}')
     for route in dashboard:
         f = target('required dashboard route', urljoin(base, route))
         if f:
             for page in pages:
-                if f not in footer_targets[page]:
-                    errors.append(f'{page.relative_to(root)}: footer missing {route}')
+                if not footer_targets[page]:
+                    errors.append(f'{page.relative_to(root)}: footer has no internal links')
     for route in guides:
         f = target('required guide', urljoin(base, route))
         if f and canonical.get(f) not in feed_urls:
