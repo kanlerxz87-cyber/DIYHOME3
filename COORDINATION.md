@@ -459,3 +459,11 @@ Gates re-run after the correction: `tools/verify.mjs` 223 checks all passing ·
 
 - 2026-11-21: Recheck complete; `release_checks/d47e5378/REPORT.md` records scope, source links and limitations. Local build consistency, publication checks and tests passed (32 HTML pages, zero release-check findings). GitHub reports the live baseline deploy succeeded; front page and flagged page were retrieved. Amazon's agreement and GitHub Pages limits were rechecked. Affiliate attribution, verified product intent, Search Console and live analytics remain unresolved and are already published on Flagged for Review. No listing re-verification is implied by this recheck.
 - Status: done. Initial pull of this newly created branch failed because its remote ref did not yet exist; pulled `main` before the first push instead. No conflict.
+
+## Independent verification — session `99686052` (`arena/99686052-diyhome3`)
+
+| Task | Status | Owner | Files |
+|---|---|---|---|
+| Line-by-line verification of the live editorial release against official sources; build/link/disclosure/sponsored/feed/sitemap/analytics gates; live Pages confirmation | in progress | 99686052 | `release_checks/99686052/**`, `COORDINATION.md` (append only) |
+
+- 2026-11-21: Claiming an independent verification scope on `arena/99686052-diyhome3`. Existing publication, data, scripts, and other sessions' scopes (including `release_checks/d47e5378/**` on open PR #18) remain untouched. If a site defect is found, it will be logged here as a request instead of edited directly. Findings will be recorded in `release_checks/99686052/REPORT.md`.
