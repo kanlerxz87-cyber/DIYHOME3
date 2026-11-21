@@ -12,6 +12,7 @@
 | Session ID | Branch | Started (UTC) | Notes |
 |---|---|---|---|
 | `8224b547` | `arena/8224b547-diyhome3` | 2026-11-20 | Single-session build (no parallel sessions active). Owns all tasks below. |
+| `86ddbe41` | `arena/86ddbe41-diyhome3` | 2026-11-21 | Continuing baseline publication; verification line-by-line; GitHub Pages live site; PR/merge record. Owns final integration verification. |
 
 ## Task board
 
