@@ -2,7 +2,9 @@
 
 [Editorial site](https://kanlerxz87-cyber.github.io/DIYHOME3/) · [Executive summary](https://kanlerxz87-cyber.github.io/DIYHOME3/executive-summary/) · [Flagged for Review](https://kanlerxz87-cyber.github.io/DIYHOME3/flagged-for-review/) · [RSS](https://kanlerxz87-cyber.github.io/DIYHOME3/feed.xml)
 
-The public release is a static editorial publication, not a live affiliate store. GitHub Pages prohibits sites primarily directed at facilitating commercial transactions; see [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits). The three category images and kitchen photo are AI-generated illustrations, not product photography. No paid product links, commercial forecasts, prices, ratings, reviews or demand rankings are published. No private account, tracking, or indexing status is inferred from public pages.
+The public release is a static editorial publication with a browsable shop, not a live affiliate storefront. GitHub Pages prohibits sites primarily directed at facilitating commercial transactions; see [GitHub Pages limits](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits). Shop pages are organised by category (`/shop/walls-finishes/`, `/shop/kitchen-organization/`, `/shop/storage-shelving/`); each lists the item, its observed ASIN, the date that observation was rechecked, what to compare, and the buying-link status. The three category images and kitchen photo are AI-generated illustrations, not product photography. No paid product links, commercial forecasts, prices, ratings, reviews or demand rankings are published. No private account, tracking, or indexing status is inferred from public pages. The three observed listings were re-fetched on 2026-11-21 and still resolve to the same ASINs; prices and stock are still not republished.
+
+`EXECUTIVE_SUMMARY.md` is the owner-facing summary: decision, the four submitted links, what was verified against which official page, and the open items.
 
 ## Build and verification
 
