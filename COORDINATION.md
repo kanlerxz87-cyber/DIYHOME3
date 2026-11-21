@@ -471,3 +471,11 @@ Gates re-run after the correction: `tools/verify.mjs` 223 checks all passing ·
 - 2026-11-21: Verification complete — see `release_checks/99686052/REPORT.md`. All 7 official sources re-fetched and confirmed (Operating Agreement 2025-10-15, Policies 2026-04-14, FTC Endorsement Guides FAQ, Google `rel="sponsored"`, GitHub Pages limits, Standard Commission rates Kitchen 4.50% / Tools-Home 3.00%, Creators API prerequisites). All 32 pages: disclosure above fold + footer, 0 tagged CTAs, 0 unsponsored product links, 0 published prices/ratings. Gates: `build.py --check` 0, `check.py` 2 OK, `check_release.py` 32 pages 0 findings, verification 5 OK, affiliate pipeline 6 OK, `audit-repo` OK, ledger OK. Live Pages `built` from `main`; homepage, flagged, product-register, measurement, feed fetched live and matching. No site defect found, so no site file was edited. Amazon listing observations were not re-fetched this session (prior dated observations preserved as observed-only). Irregularities unchanged and already published on Flagged for Review.
 
 - 2026-11-21: Follow-up PR #21 conflicted with session `99686052` board additions after its PR merged. Preserved both entries in a merge of `main` into this branch; no session work discarded.
+
+## Current session — `8229e62c` (2026-11-21)
+
+| ID | Task | Status | Owner | Files touched |
+|---|---|---|---|---|
+| T19 | Acceptance audit of the current integrated site; clarify the actual automation/AI boundary in the executive summary | in progress | `8229e62c` | `scripts/build.py`, generated `executive-summary/index.html`, `COORDINATION.md` |
+
+Claim recorded before work. Earlier T01–T18 entries are historical completed work. This session remains on the Arena-assigned branch `arena/8229e62c-diyhome3`.
