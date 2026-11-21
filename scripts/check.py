@@ -35,7 +35,102 @@ class Page(HTMLParser):
                 self.refs.append((a[key], a.get('rel','').split()))
 
 
+class Rows(HTMLParser):
+    """Collect <tr>/<td> text and the hrefs inside each cell."""
+
+    def __init__(self, text):
+        super().__init__()
+        self.rows, self._row, self._cell = [], None, None
+        self.feed(text)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'tr':
+            self._row = []
+        elif tag == 'td' and self._row is not None:
+            self._cell = {'text': [], 'hrefs': []}
+        elif tag == 'a' and self._cell is not None:
+            self._cell['hrefs'].append(dict(attrs).get('href', ''))
+
+    def handle_data(self, data):
+        if self._cell is not None:
+            self._cell['text'].append(data)
+
+    def handle_endtag(self, tag):
+        if tag == 'td' and self._cell is not None:
+            self._row.append({'text': ''.join(self._cell['text']).strip(), 'hrefs': self._cell['hrefs']})
+            self._cell = None
+        elif tag == 'tr' and self._row is not None:
+            if self._row:
+                self.rows.append(self._row)
+            self._row = None
+
+
+#: Flags that must stay on the published Flagged for Review page (T18/T21).
+REQUIRED_FLAGS = ('F-08', 'F-09', 'F-21')
+#: Frozen event names (F-21). A rename after collection starts loses comparability.
+FROZEN_EVENTS = ('page_view', 'guide_view', 'outbound_click', 'feed_click', 'reported_order')
+AMAZON_IMAGE_HOSTS = ('amazon.com', 'media-amazon.com', 'ssl-images-amazon.com')
+
+
+def flag_findings(rows):
+    """Return the problems in a flag table, so the detector can be self-tested."""
+    findings = []
+    if not rows:
+        return ['flag table is empty']
+    labels = [r[0]['text'] for r in rows if r]
+    for flag in REQUIRED_FLAGS:
+        if not any(flag in label for label in labels):
+            findings.append(f'{flag} is missing from the Flagged for Review table')
+    for row in rows:
+        if len(row) < 2:
+            findings.append(f'row "{row[0]["text"][:40]}" has no source cell')
+            continue
+        source = row[-1]
+        if not source['hrefs'] and 'no official source' not in source['text'].lower():
+            findings.append(f'row "{row[0]["text"][:40]}" has neither a source link nor an explicit "no official source"')
+    return findings
+
+
+class ImageSrcs(HTMLParser):
+    def __init__(self, text):
+        super().__init__()
+        self.srcs = []
+        self.feed(text)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'img':
+            self.srcs.append(dict(attrs).get('src', ''))
+
+
 class Checks(unittest.TestCase):
+    def test_flags(self):
+        """T18/T21: the three unshipped flags stay published and stay sourced."""
+        page = (ROOT / 'flagged-for-review' / 'index.html').read_text()
+        findings = flag_findings(Rows(page).rows)
+        self.assertEqual(findings, [], findings)
+        # Positive control: the detector must fire on a known violation, otherwise
+        # a pass only proves the detector is broken.
+        broken = '<table><tbody><tr><td>Intended products</td><td>x</td><td>y</td><td>unsourced</td></tr></tbody></table>'
+        control = flag_findings(Rows(broken).rows)
+        self.assertTrue(any('F-08 is missing' in f for f in control), control)
+        self.assertTrue(any('no official source' in f for f in control), control)
+        # F-21: the frozen five, in both the enumeration and the collector gate.
+        targets = json.loads((ROOT / 'analytics' / 'targets.json').read_text())
+        self.assertEqual(sorted(targets), sorted(FROZEN_EVENTS))
+        collector = (ROOT / 'analytics' / 'server.py').read_text()
+        for name in FROZEN_EVENTS:
+            self.assertIn(name, collector)
+        measurement = (ROOT / 'measurement' / 'index.html').read_text()
+        for name in FROZEN_EVENTS:
+            self.assertIn(name, measurement)
+
+    def test_no_amazon_imagery(self):
+        """F-09: no Amazon-hosted image may be embedded — the licence window is 24h."""
+        for file in sorted(p for p in ROOT.rglob('*.html') if 'verification' not in p.relative_to(ROOT).parts):
+            for raw in ImageSrcs(file.read_text()).srcs:
+                host = urlsplit(urljoin(BASE, raw)).hostname or ''
+                self.assertFalse(any(host == d or host.endswith('.' + d) for d in AMAZON_IMAGE_HOSTS), (file, raw))
+
     def test_site(self):
         files = sorted(p for p in ROOT.rglob('*.html') if 'verification' not in p.relative_to(ROOT).parts)
         pages = {}
