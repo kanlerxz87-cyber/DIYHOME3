@@ -670,3 +670,25 @@ rating or stock value. `SPECIAL_LINKS` remains `{}`.
 
 - PR: https://github.com/kanlerxz87-cyber/DIYHOME3/pull/29 — **MERGED** 2026-11-21T23:32:34Z, merge commit `d637a5aae47b2fc2388c35343c71d8cf2de1663c`. PR checks `verify`, `evidence-boundaries`, `compliance-gate` passed before the merge.
 - Post-merge: [Verify publication](https://github.com/kanlerxz87-cyber/DIYHOME3/actions/runs/44962304202) success; [Deploy GitHub Pages](https://github.com/kanlerxz87-cyber/DIYHOME3/actions/runs/44962304190) success. Pages API reports `status=built`, `error=null` for commit `d637a5aae47b2fc2388c35343c71d8cf2de1663c` (updated 2026-11-21T23:32:50Z). Live front page and the corrected `guides/air-fryer-capacity/` page were fetched from the public host and confirmed.
+
+### T29 publish record — session `f23eebec` — complete
+
+- **PR #31** https://github.com/kanlerxz87-cyber/DIYHOME3/pull/31 — MERGED 2026-11-21T23:36:01Z, merge commit `8a30e09d084cf06ae82bc8af5678bfb521b3fc1a`.
+  Rebased twice onto a moving `main` (`99aeac6`, then `901a661`); each rebase conflicted only in this file, resolved by keeping **both** sides' text. One `--force-with-lease` on this session's own branch only (its earlier savepoint `a413d28`); `main` was never force-pushed.
+- **PR CI before merge:** `verify` pass · `compliance-gate` pass · `evidence-boundaries` pass.
+- **PR #32** https://github.com/kanlerxz87-cyber/DIYHOME3/pull/32 — MERGED 2026-11-21T23:40:04Z, merge commit `5ab1058`. Same three checks passed. Fixes two defects that PR #31 shipped and **no gate caught** (see below).
+- **Pages:** latest build reports `status=built` for `5ab1058`, `error=none`; `Deploy GitHub Pages`, `Verify publication`, `Independent source and identity audit` and `Affiliate compliance pipeline` all succeeded for that commit.
+- **Live fetches after deploy:** `/verified/` renders all eleven claim rows and the six deliberate blanks with their official links; `/sources/?v=5ab1058` renders the dated rate table; `/flagged-for-review/` carries F-22; `/sitemap.xml` lists exactly 13 URLs — the home page, `/shop/`, the three category pages and the seven guides. No duplicate category URLs exist.
+
+**Two defects shipped in #31 and fixed in #32 — recorded because the gates passed while both were live:**
+
+1. **A link to an anchor that did not exist.** `/verified/` and `/shop/` linked to `/sources/#rates`, but the section never rendered: the `desk_page('sources', …)` edit matched text that another session had already changed on `main`, so the replacement silently did nothing. `scripts/check.py` resolves fragments only for same-origin *page* links, and the release checker does not assert desk-page anchors exist. Found by reading the live page, not by any check.
+2. **Literal backticks** rendered in the F-22 row.
+
+**Open request to the ownering session of `verification/check_release.py`'s dashboard checks** (logged, not edited): assert that every `#fragment` on a *dashboard* page resolves too, and that any link from an indexed page to `#x` has a matching `id="x"` in the target file. A one-line check would have caught defect 1 before the merge.
+
+### F-22 vs F-08 — an overlap worth naming
+
+Main's F-08 already covers "the observations were collected by automated tooling; treat them as provisional". F-22 cites IP License §4 for the narrower, testable obligation: the `Agent/[agent name]` user-agent token. They are adjacent, not identical, and merging them would lose the specific requirement. If a future session consolidates them, keep the §4 citation and the instruction to re-observe in a browser.
+
+T25: done · T26: done · T27: needs review (published) · T28: withdrawn · T29: done
