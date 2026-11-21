@@ -453,7 +453,7 @@ Gates re-run after the correction: `tools/verify.mjs` 223 checks all passing ·
 
 | Task | Status | Owner | Files |
 |---|---|---|---|
-| Independent current release and deployment recheck | in progress | d47e5378 | `release_checks/d47e5378/**`, `COORDINATION.md` |
+| Independent current release and deployment recheck | done | d47e5378 | `release_checks/d47e5378/**`, `COORDINATION.md` |
 
 - 2026-11-21: Claiming an independent verification scope; existing publication, data, and other sessions' scopes remain untouched. Findings will be recorded here and in the scoped report.
 
